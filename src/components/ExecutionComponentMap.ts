@@ -34,7 +34,6 @@
 
 // Import execution components
 import SampleActionComponent from "./execution-components/SampleActionComponent";
-import DataProcessingActionComponent from "./execution-components/DataProcessingActionComponent";
 import LinkedinPostRetriever from "./execution-components/LinkedinPostRetriever";
 
 /**
@@ -55,6 +54,7 @@ import LinkedinPostRetriever from "./execution-components/LinkedinPostRetriever"
  */
 export const EXECUTION_COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
     "12c2bbz": LinkedinPostRetriever    ,
+    "jhk8270": SampleActionComponent
     
     
     // Add your custom action components here:
