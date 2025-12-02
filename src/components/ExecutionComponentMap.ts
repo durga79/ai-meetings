@@ -35,6 +35,7 @@
 // Import execution components
 import SampleActionComponent from "./execution-components/SampleActionComponent";
 import DataProcessingActionComponent from "./execution-components/DataProcessingActionComponent";
+import LinkedinPostRetriever from "./execution-components/LinkedinPostRetriever";
 
 /**
  * EXECUTION_COMPONENT_MAP
@@ -53,11 +54,8 @@ import DataProcessingActionComponent from "./execution-components/DataProcessing
  * - "slack_notification_action"
  */
 export const EXECUTION_COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
-    // Sample action - use as a template
-    "sample_action_v1": SampleActionComponent,
+    "12c2bbz": LinkedinPostRetriever    ,
     
-    // Data processing action example
-    "data_processing_action": DataProcessingActionComponent,
     
     // Add your custom action components here:
     // "your_action_unique_id": YourActionComponent,
