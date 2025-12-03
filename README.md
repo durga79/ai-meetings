@@ -54,6 +54,15 @@ coworker_template/
 └── package.json
 ```
 
+## Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash
+# Coworker APIs service URL
+NEXT_PUBLIC_COWORKER_APIS_URL=http://localhost:3005
+```
+
 ## Configuration
 
 ### 1. Update the Scope Name
