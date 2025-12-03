@@ -3,25 +3,210 @@
 @tailwind utilities;
 
 /* CSS Variables for theme consistency with host */
-:root {
-    --surface-container-default: #1a1a1a;
-    --surface-container-default-lighter: #2a2a2a;
-    --surface-interactive-brand: #3b82f6;
-    --surface-interactive-brand-pressed: #2563eb;
-    --surface-inverse-fade: rgba(255, 255, 255, 0.1);
-    
-    --text-inverse-default: #ffffff;
-    --text-inverse-subtle: #a1a1aa;
-    --text-inverse-subtlest: #71717a;
-    
-    --stroke-default: #27272a;
-    
-    --semantic-success-surface: #22c55e;
-    --semantic-error-surface: #ef4444;
-    --semantic-warning-surface: #f59e0b;
-    
-    --input-container: #27272a;
-    --input-stroke: #3f3f46;
+@layer base {
+    :root {
+        --background: 240 16% 2%;
+        --foreground: 240 10% 96%;
+        --popover: 240 10% 4%;
+        --popover-foreground: 240 10% 96%;
+        --primary: 269 98% 61%;
+        --primary-foreground: 268 100% 97%;
+        --secondary: 240 4% 29%;
+        --secondary-foreground: 240 2% 92%;
+        --muted: 240 4% 16%;
+        --muted-foreground: 240 4% 79%;
+        --accent: 240 4% 16%;
+        --accent-foreground: 240 4% 95%;
+        --destructive: 0 63% 31%;
+        --destructive-foreground: 0 85.7% 97.3%;
+        --border: 240 4% 26%;
+        --input: 240 4% 26%;
+        --ring: 269 98% 61%;
+
+        /* custom colors */
+        --success: 140 100% 27%;
+        --warning: 31 92% 45%;
+        --background-white: 0 0% 100%;
+        --fade-white: 240 2% 24%;
+        --text-default: 240 16% 15%;
+        --star: 240 16% 15%;
+        --chat-background: 240 2% 8%;
+        --chat-message-background-1: 0 0% 12%;
+        --chat-message-background-2: 240 6% 10%;
+        --chat-message-background-3: 240 4% 16%;
+
+        --output-background: 240 6% 10%;
+
+        --sidebar-background: 240 5.9% 10%;
+        --sidebar-foreground: 240 4.8% 95.9%;
+        --sidebar-primary: 224.3 76.3% 48%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 240 3.7% 15.9%;
+        --sidebar-accent-foreground: 240 4.8% 95.9%;
+        --sidebar-border: 240 3.7% 15.9%;
+        --sidebar-ring: 217.2 91.2% 59.8%;
+
+        --background: 240 19% 94%;
+
+        --input-container: 0 0% 100%;
+        --input-stroke: 235 18% 84%;
+        --input-stroke-active: 273 100% 91%;
+
+        --semantic-error-surface: 17 93% 48%;
+        --semantic-error-text: 30 100% 96%;
+        --semantic-success-surface: 74 90% 58%;
+        --semantic-success-text: 80 92% 10%;
+        --semantic-warning-surface: 51 98% 52%;
+        --semantic-warning-text: 29 86% 14%;
+
+        --surface-container-default: 0 0% 100%;
+        --surface-container-default-lighter: 240 19% 94%;
+        --surface-container-raised: 236 19% 84%;
+        --surface-container-sunken: 240 19% 94%;
+        --surface-container-active: 0 0% 100%;
+        --surface-interactive-brand: 273 100% 63%;
+        --surface-interactive-brand-pressed: 272 99% 59%;
+        --surface-interactive-brand-raised: 273 100% 73%;
+        --surface-interactive-default: 240 16% 15%;
+        --surface-interactive-default-inactive: 240 15% 5%;
+        --surface-interactive-default-pressed: 240 15% 5%;
+        --surface-interactive-default-raised: 237 16% 24%;
+        --surface-interactive-disabled: 238 19% 27%;
+        --surface-interactive-secondary: 0 0% 100%;
+        --surface-interactive-secondary-pressed: 240 19% 94%;
+        --surface-interactive-secondary-raised: 240 20% 97%;
+        --surface-inverse: 240 16% 5%;
+        --surface-inverse-fade: 0 0% 100%;
+        --surface-inverse-subtle: 240 20% 97%;
+        --surface-inverse-subtlest: 240 19% 94%;
+        --surface-container-purple: 274 100% 95%;
+
+        --stroke-default: 240 19% 94%;
+        --stroke-soft: 235 18% 86%;
+        --stroke-subtle: 234 19% 53%;
+        --stroke-subtlest: 238 19% 22%;
+
+        --text-inverse-default: 240 16% 10%;
+        --text-inverse-subtle: 237 20% 30%;
+        --text-inverse-subtlest: 234 19% 60%;
+        --text-link: 272 99% 59%;
+        --text-subtle: 237 18% 86%;
+        --text-subtlest: 234 19% 60%;
+        --text-success: 76 98% 35%;
+
+        --accent-lime-400: 74 90% 58%;
+        --accent-lime-500: 75 93% 44%;
+        --accent-lime-600: 76 98% 35%;
+        --accent-lime-50: 67 100% 95%;
+
+        --decoration: 240 19% 94%;
+        --backgrounds: 240 16% 5%;
+
+        --brand-purple-100: 272 100% 95%;
+        --brand-purple-300: 267 93% 80%;
+        --brand-purple-600: 272 99% 59%;
+        --brand-purple-800: 273 82% 39%;
+        --brand-purple-950: 274 100% 22%;
+
+        --accent-pink-600: 309 37% 49%;
+        --accent-yellow-600: 44 99% 40%;
+        --accent-orange-300: 27 100% 68%;
+        --accent-orange-600: 17 93% 48%;
+        --accent-sage-600: 114 20% 36%;
+        --accent-pink-950: 310 49% 16%;
+        --accent-orange-950: 10 84% 15%;
+        --accent-sage-50: 120 18% 97%;
+        --accent-sage-950: 120 22% 10%;
+        --accent-pink-400: 307 49% 73%;
+        --accent-orange-400: 23 99% 61%;
+        --accent-sage-400: 112 18% 58%;
+
+        --neutral-600: 238 20% 30%;
+    }
+
+    .dark {
+        --background: 240 16% 2%;
+
+        --input-container: 238 19% 22%;
+        --input-stroke: 237 20% 30%;
+        --input-stroke-active: 273 100% 73%;
+
+        --semantic-error-surface: 17 93% 48%;
+        --semantic-error-text: 30 100% 96%;
+        --semantic-success-surface: 74 90% 58%;
+        --semantic-success-text: 80 92% 10%;
+        --semantic-warning-surface: 51 98% 52%;
+        --semantic-warning-text: 29 86% 14%;
+
+        /* custom colors */
+        --success: 140 100% 27%;
+        --warning: 31 92% 45%;
+
+        --surface-container-default: 240 16% 10%;
+        --surface-container-active: 237 16% 14%;
+        --surface-container-default-lighter: 237 16% 14%;
+        --surface-container-raised: 240 19% 22%;
+        --surface-container-sunken: 240 15% 5%;
+        --surface-interactive-brand: 273 100% 63%;
+        --surface-interactive-brand-pressed: 272 99% 59%;
+        --surface-interactive-brand-raised: 273 100% 73%;
+        --surface-interactive-default: 240 16% 15%;
+        --surface-interactive-default-inactive: 240 15% 5%;
+        --surface-interactive-default-pressed: 240 15% 5%;
+        --surface-interactive-default-raised: 237 16% 24%;
+        --surface-interactive-disabled: 238 19% 27%;
+
+        --surface-interactive-secondary: 240 16% 2%;
+        --surface-interactive-secondary-pressed: 240 19% 94%;
+        --surface-interactive-secondary-raised: 240 18% 10%;
+        --surface-inverse: 0 0% 100%;
+        --surface-inverse-fade: 0 0% 100%;
+        --surface-inverse-subtle: 240 20% 97%;
+        --surface-inverse-subtlest: 240 19% 94%;
+        --surface-container-purple: 274 100% 22%;
+
+        --stroke-default: 238 19% 22%;
+        --stroke-soft: 240 16% 15%;
+        --stroke-subtle: 234 19% 53%;
+        --stroke-subtlest: 235 18% 84%;
+
+        --text-inverse-default: 0 0% 100%;
+        --text-inverse-subtle: 235 18% 84%;
+        --text-inverse-subtlest: 236 20% 74%;
+        --text-default: 240 16% 15%;
+        --text-link: 273 100% 73%;
+        --text-subtle: 237 20% 30%;
+        --text-subtlest: 234 19% 60%;
+        --text-success: 74 90% 58%;
+
+        --accent-lime-400: 74 90% 58%;
+        --accent-lime-500: 75 93% 44%;
+        --accent-lime-600: 76 98% 35%;
+        --accent-lime-50: 67 100% 95%;
+
+        --brand-purple-100: 272 100% 95%;
+        --brand-purple-300: 267 93% 80%;
+        --brand-purple-600: 272 99% 59%;
+        --brand-purple-800: 273 82% 39%;
+        --brand-purple-950: 274 100% 22%;
+
+        --decoration: 237 16% 24%;
+        --background: 240 16% 2%;
+        --accent-pink-600: 309 37% 49%;
+        --accent-yellow-600: 44 99% 40%;
+        --accent-orange-300: 27 100% 68%;
+        --accent-orange-600: 17 93% 48%;
+        --accent-sage-600: 114 20% 36%;
+        --accent-pink-950: 310 49% 16%;
+        --accent-orange-950: 10 84% 15%;
+        --accent-sage-950: 120 22% 10%;
+        --accent-sage-50: 120 18% 97%;
+        --accent-pink-400: 307 49% 73%;
+        --accent-orange-400: 23 99% 61%;
+        --accent-sage-400: 112 18% 58%;
+
+        --neutral-600: 238 20% 30%;
+    }
 }
 
 /* Base styles */
