@@ -33,8 +33,10 @@
  */
 
 // Import execution components
-import SampleActionComponent from "./execution-components/SampleActionComponent";
-import LinkedinPostRetriever from "./execution-components/LinkedinPostRetriever";
+import LinkedinPostLiker from "./execution-components/LinkedinPostLiker";
+import LinkedinPostCommentor from "./execution-components/LinkedinPostCommentor";
+import LinkedinPostIdFromUrl from "./execution-components/LinkedinPostIdFromUrl";
+import LinkedinKeywordPostsRetriever from "./execution-components/LinkedinKeywordPostsRetriever";
 
 /**
  * EXECUTION_COMPONENT_MAP
@@ -53,17 +55,17 @@ import LinkedinPostRetriever from "./execution-components/LinkedinPostRetriever"
  * - "slack_notification_action"
  */
 export const EXECUTION_COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
-    "12c2bbz": LinkedinPostRetriever    ,
-    "jhk8270": SampleActionComponent
-    
-    
-    // Add your custom action components here:
-    // "your_action_unique_id": YourActionComponent,
-    // "another_action_id": AnotherActionComponent,
-    
-    // You can also use patterns for similar actions:
-    // "email_action_v1": EmailActionComponent,
-    // "email_action_v2": EmailActionComponent, // Same component, different version
+    // LinkedIn post liker (shows post details and interactions)
+    "12a4cdz": LinkedinPostLiker,
+
+    // LinkedIn post commentor
+    "12a4cdf": LinkedinPostCommentor,
+
+    // Retrieve postId from URL
+    "12a4cde": LinkedinPostIdFromUrl,
+
+    // Retrieve posts based on keywords
+    "12a4cdc": LinkedinKeywordPostsRetriever,
 };
 
 export default EXECUTION_COMPONENT_MAP;

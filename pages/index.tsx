@@ -239,6 +239,12 @@ function getMockProps(uiKey: string): Record<string, any> {
 
 // Mock execution logs generator
 function getMockExecutionLogs(actionId: string) {
+    // For LinkedIn Post Liker we just pass an empty logs object to
+    // verify that the custom execution UI is wired correctly.
+    if (actionId === "12a4cdz") {
+        return {} as any;
+    }
+
     return {
         status: "completed",
         goal: `Execute ${actionId}`,
@@ -260,7 +266,13 @@ function getMockExecutionLogs(actionId: string) {
                 started_at: Date.now(),
                 llm_output: {
                     skill: { skill_name: "sample_skill", input: {} },
-                    thoughts: { reasoning: "Processing data", plan: "Execute task", text: null, speak: null, criticism: null },
+                    thoughts: {
+                        reasoning: "Processing data",
+                        plan: "Execute task",
+                        text: null,
+                        speak: null,
+                        criticism: null,
+                    },
                 },
                 price: null,
                 output_data: { result: "success" },

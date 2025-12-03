@@ -38,6 +38,405 @@ export default function SampleActionComponent({
         );
     }
 
+    logs={
+        "agentflow_id": "692ed40868884a5de7651762",
+        "agentflow_name": "LinkedIn Post Liker",
+        "files": [],
+        "goal": "Post ID : urn:li:activity:7313790146720538625",
+        "schedule": null,
+        "start_from_agent_id": null,
+        "input_variables": {
+            "post_id": "urn:li:activity:7313790146720538625"
+        },
+        "task_id": "692ed6cb68884a5de765180c",
+        "parent_execution_id": null,
+        "agentflow": {
+            "agentflow_id": "692ed40868884a5de7651762",
+            "agents": [
+                {
+                    "_id": "692ed40868884a5de7651763",
+                    "llm": {
+                        "model": "bedrock/gpt-oss-20b",
+                        "temperature": 0,
+                        "max_tokens": 10000
+                    },
+                    "role": "Post Liker",
+                    "role_description": "Likes the given post",
+                    "title": "Post Liker",
+                    "agent_type": "skilled_agent",
+                    "next_agent": null
+                }
+            ],
+            "image": "https://wexadev.blob.core.windows.net/coworkers/process-flow-wexa-5.png",
+            "initialAgent": "692ed40868884a5de7651763",
+            "name": "LinkedIn Post Liker",
+            "role": "LinkedIn Post Liker",
+            "conclusion": null,
+            "unique_id": null,
+            "ui_card": null
+        },
+        "agents_output": [
+            {
+                "agent_id": "692ed40868884a5de7651763",
+                "agent_name": "Post Liker",
+                "agent_role": "Post Liker",
+                "agentflow_name": "LinkedIn Post Liker",
+                "created_at": 1764677336.925899,
+                "decision": null,
+                "error": null,
+                "input_data": {
+                    "text": "I need to like the LinkedIn post with the given post ID.",
+                    "reasoning": "The goal specifies the post ID. To react, I must use the LinkedIn reaction skill, which requires an account ID, the post ID, and a reaction type. I will use a placeholder for the account ID as it is not provided."
+                },
+                "max_tokens": 10000,
+                "model": "bedrock/gpt-oss-20b",
+                "output_data": null,
+                "summary": "I need to like the LinkedIn post with the given post ID. ",
+                "temperature": 0,
+                "type": "observation"
+            },
+            {
+                "agent_id": "692ed40868884a5de7651763",
+                "agent_name": "Post Liker",
+                "agent_role": "Post Liker",
+                "agentflow_name": "LinkedIn Post Liker",
+                "created_at": 1764677341.164684,
+                "decision": null,
+                "error": null,
+                "input_data": {
+                    "plan": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'.",
+                    "criticism": "I lack the actual account ID, so the reaction may not be executed without valid credentials.",
+                    "speak": "I will attempt to like the post using the provided post ID.",
+                    "skill": {
+                        "name": "LinkedIn - Post a reaction",
+                        "id": "692ed42768884a5de765178a",
+                        "input": {
+                            "account_id": "your_account_id",
+                            "post_id": "urn:li:activity:7313790146720538625",
+                            "reaction_type": "like"
+                        }
+                    }
+                },
+                "max_tokens": 10000,
+                "model": "bedrock/gpt-oss-20b",
+                "output_data": null,
+                "summary": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'. ",
+                "temperature": 0,
+                "type": "plan"
+            },
+            {
+                "agent_id": "692ed40868884a5de7651763",
+                "agent_name": "Post Liker",
+                "agent_role": "Post Liker",
+                "agentflow_name": "LinkedIn Post Liker",
+                "created_at": 1764677345.640222,
+                "decision": null,
+                "error": null,
+                "input_data": {
+                    "thoughts": {
+                        "text": "I need to like the LinkedIn post with the given post ID.",
+                        "reasoning": "The goal specifies the post ID. To react, I must use the LinkedIn reaction skill, which requires an account ID, the post ID, and a reaction type. I will use a placeholder for the account ID as it is not provided.",
+                        "plan": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'.",
+                        "criticism": "I lack the actual account ID, so the reaction may not be executed without valid credentials.",
+                        "speak": "I will attempt to like the post using the provided post ID."
+                    },
+                    "skill": {
+                        "name": "LinkedIn - Post a reaction",
+                        "id": "692ed42768884a5de765178a",
+                        "input": {
+                            "account_id": "your_account_id",
+                            "post_id": "urn:li:activity:7313790146720538625",
+                            "reaction_type": "like"
+                        }
+                    }
+                },
+                "max_tokens": 10000,
+                "model": "bedrock/gpt-oss-20b",
+                "output_data": {
+                    "reactions": {
+                        "object": "ReactionAdded"
+                    }
+                },
+                "summary": "LinkedIn Post Liker acting as Post Liker has executed a reaction addition to a post.",
+                "temperature": 0,
+                "type": "output"
+            }
+        ],
+        "anomaly_detected": null,
+        "conclusion": {
+            "conclusion": "# Execution Summary\n\n## Task Overview\n\nThe task was to like a specific LinkedIn post with the ID `urn:li:activity:7313790146720538625`.\n\n## Execution Details\n\n- **Account ID**: `your_account_id`\n- **Post ID**: `urn:li:activity:7313790146720538625`\n- **Reaction Type**: `like`\n\n## Outcome\n\n- **Reactions**: \n  - `{'object': 'ReactionAdded'}`\n\n## Conclusion\n\nThe post with ID `urn:li:activity:7313790146720538625` has been successfully liked. The reaction has been recorded as `ReactionAdded`.\n\n___\n\n**Metadata:**\n\n- **Agent Title**: Post Liker\n- **Execution Date**: [Current Date]\n- **Status**: Completed",
+            "links": [],
+            "tokens_used": 1625,
+            "created_at": 1764677355.448059
+        },
+        "created_at": 1764677323.932552,
+        "end_time": 1764677356.355065,
+        "executed_by": {
+            "_id": "686d2cd4f926c032a7f894a6",
+            "metadata": null,
+            "name": "nani799324",
+            "type": "manual",
+            "is_external_application": false,
+            "application_user_id": null
+        },
+        "execution_context": {
+            "692ed40868884a5de7651763": {
+                "agent_title": "Post Liker",
+                "agent_role": "Post Liker",
+                "decision": null,
+                "error": null,
+                "execution_duration": 17,
+                "input_data": {
+                    "account_id": "your_account_id",
+                    "post_id": "urn:li:activity:7313790146720538625",
+                    "reaction_type": "like"
+                },
+                "knowledge_base": null,
+                "llm_output": {
+                    "thoughts": {
+                        "text": "I need to like the LinkedIn post with the given post ID.",
+                        "reasoning": "The goal specifies the post ID. To react, I must use the LinkedIn reaction skill, which requires an account ID, the post ID, and a reaction type. I will use a placeholder for the account ID as it is not provided.",
+                        "plan": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'.",
+                        "criticism": "I lack the actual account ID, so the reaction may not be executed without valid credentials.",
+                        "speak": "I will attempt to like the post using the provided post ID."
+                    },
+                    "skill": {
+                        "name": "LinkedIn - Post a reaction",
+                        "id": "692ed42768884a5de765178a",
+                        "input": {
+                            "account_id": "your_account_id",
+                            "post_id": "urn:li:activity:7313790146720538625",
+                            "reaction_type": "like"
+                        }
+                    }
+                },
+                "modified_inputs_during_preview": null,
+                "model_used": "bedrock/gpt-oss-20b",
+                "output_data": {
+                    "reactions": {
+                        "object": "ReactionAdded"
+                    }
+                },
+                "preview_input": null,
+                "skill_chosen": "LinkedIn - Post a reaction",
+                "started_at": 1764677330.369918,
+                "status": "completed",
+                "tokens_used": 2381,
+                "total_summary_tokens": 468,
+                "triggers": []
+            }
+        },
+        "execution_id": "dbcdd121-4318-41e3-8c3f-a2f9192829fe",
+        "goal_template": "Post ID : {{post_id}}",
+        "_id": "692ed6cb68884a5de765180b",
+        "previews": {},
+        "projectID": "692ed403b90fcf805c47cd7e",
+        "runtime_inputs": {},
+        "status": "completed",
+        "is_external_application": false,
+        "application_user_id": null,
+        "analytics": {
+            "agent_analytics": {
+                "692ed40868884a5de7651763": {
+                    "tokens_used": 2381,
+                    "summary_tokens": 468,
+                    "total_tokens": 2849,
+                    "execution_time": 17,
+                    "price": 0.001
+                }
+            },
+            "overall": {
+                "total_tokens_used": 2381,
+                "total_summary_tokens": 468,
+                "total_conclusion_tokens": 1625,
+                "total_tokens": 4474,
+                "average_execution_time": 17,
+                "total_execution_time": 17,
+                "total_price": 0.001
+            }
+        },
+        "categorized_data": {
+            "logs": [
+                {
+                    "agent_id": "692ed40868884a5de7651763",
+                    "agent_name": "Post Liker",
+                    "agent_role": "Post Liker",
+                    "agentflow_name": "LinkedIn Post Liker",
+                    "created_at": 1764677345.640222,
+                    "decision": null,
+                    "error": null,
+                    "input_data": {
+                        "thoughts": {
+                            "text": "I need to like the LinkedIn post with the given post ID.",
+                            "reasoning": "The goal specifies the post ID. To react, I must use the LinkedIn reaction skill, which requires an account ID, the post ID, and a reaction type. I will use a placeholder for the account ID as it is not provided.",
+                            "plan": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'.",
+                            "criticism": "I lack the actual account ID, so the reaction may not be executed without valid credentials.",
+                            "speak": "I will attempt to like the post using the provided post ID."
+                        },
+                        "skill": {
+                            "name": "LinkedIn - Post a reaction",
+                            "id": "692ed42768884a5de765178a",
+                            "input": {
+                                "account_id": "your_account_id",
+                                "post_id": "urn:li:activity:7313790146720538625",
+                                "reaction_type": "like"
+                            }
+                        }
+                    },
+                    "max_tokens": 10000,
+                    "model": "bedrock/gpt-oss-20b",
+                    "output_data": {
+                        "reactions": {
+                            "object": "ReactionAdded"
+                        }
+                    },
+                    "summary": "LinkedIn Post Liker acting as Post Liker has executed a reaction addition to a post.",
+                    "temperature": 0,
+                    "type": "output"
+                },
+                {
+                    "agent_id": "692ed40868884a5de7651763",
+                    "agent_name": "Post Liker",
+                    "agent_role": "Post Liker",
+                    "agentflow_name": "LinkedIn Post Liker",
+                    "created_at": 1764677341.164684,
+                    "decision": null,
+                    "error": null,
+                    "input_data": {
+                        "plan": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'.",
+                        "criticism": "I lack the actual account ID, so the reaction may not be executed without valid credentials.",
+                        "speak": "I will attempt to like the post using the provided post ID.",
+                        "skill": {
+                            "name": "LinkedIn - Post a reaction",
+                            "id": "692ed42768884a5de765178a",
+                            "input": {
+                                "account_id": "your_account_id",
+                                "post_id": "urn:li:activity:7313790146720538625",
+                                "reaction_type": "like"
+                            }
+                        }
+                    },
+                    "max_tokens": 10000,
+                    "model": "bedrock/gpt-oss-20b",
+                    "output_data": null,
+                    "summary": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'. ",
+                    "temperature": 0,
+                    "type": "plan"
+                },
+                {
+                    "agent_id": "692ed40868884a5de7651763",
+                    "agent_name": "Post Liker",
+                    "agent_role": "Post Liker",
+                    "agentflow_name": "LinkedIn Post Liker",
+                    "created_at": 1764677336.925899,
+                    "decision": null,
+                    "error": null,
+                    "input_data": {
+                        "text": "I need to like the LinkedIn post with the given post ID.",
+                        "reasoning": "The goal specifies the post ID. To react, I must use the LinkedIn reaction skill, which requires an account ID, the post ID, and a reaction type. I will use a placeholder for the account ID as it is not provided."
+                    },
+                    "max_tokens": 10000,
+                    "model": "bedrock/gpt-oss-20b",
+                    "output_data": null,
+                    "summary": "I need to like the LinkedIn post with the given post ID. ",
+                    "temperature": 0,
+                    "type": "observation"
+                }
+            ],
+            "observation": [
+                {
+                    "agent_id": "692ed40868884a5de7651763",
+                    "agent_name": "Post Liker",
+                    "agent_role": "Post Liker",
+                    "agentflow_name": "LinkedIn Post Liker",
+                    "created_at": 1764677336.925899,
+                    "decision": null,
+                    "error": null,
+                    "input_data": {
+                        "text": "I need to like the LinkedIn post with the given post ID.",
+                        "reasoning": "The goal specifies the post ID. To react, I must use the LinkedIn reaction skill, which requires an account ID, the post ID, and a reaction type. I will use a placeholder for the account ID as it is not provided."
+                    },
+                    "max_tokens": 10000,
+                    "model": "bedrock/gpt-oss-20b",
+                    "output_data": null,
+                    "summary": "I need to like the LinkedIn post with the given post ID. ",
+                    "temperature": 0,
+                    "type": "observation"
+                }
+            ],
+            "plan": [
+                {
+                    "agent_id": "692ed40868884a5de7651763",
+                    "agent_name": "Post Liker",
+                    "agent_role": "Post Liker",
+                    "agentflow_name": "LinkedIn Post Liker",
+                    "created_at": 1764677341.164684,
+                    "decision": null,
+                    "error": null,
+                    "input_data": {
+                        "plan": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'.",
+                        "criticism": "I lack the actual account ID, so the reaction may not be executed without valid credentials.",
+                        "speak": "I will attempt to like the post using the provided post ID.",
+                        "skill": {
+                            "name": "LinkedIn - Post a reaction",
+                            "id": "692ed42768884a5de765178a",
+                            "input": {
+                                "account_id": "your_account_id",
+                                "post_id": "urn:li:activity:7313790146720538625",
+                                "reaction_type": "like"
+                            }
+                        }
+                    },
+                    "max_tokens": 10000,
+                    "model": "bedrock/gpt-oss-20b",
+                    "output_data": null,
+                    "summary": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'. ",
+                    "temperature": 0,
+                    "type": "plan"
+                }
+            ],
+            "output": [
+                {
+                    "agent_id": "692ed40868884a5de7651763",
+                    "agent_name": "Post Liker",
+                    "agent_role": "Post Liker",
+                    "agentflow_name": "LinkedIn Post Liker",
+                    "created_at": 1764677345.640222,
+                    "decision": null,
+                    "error": null,
+                    "input_data": {
+                        "thoughts": {
+                            "text": "I need to like the LinkedIn post with the given post ID.",
+                            "reasoning": "The goal specifies the post ID. To react, I must use the LinkedIn reaction skill, which requires an account ID, the post ID, and a reaction type. I will use a placeholder for the account ID as it is not provided.",
+                            "plan": "- Identify the post ID from the goal.\n- Prepare the reaction input with a placeholder account ID.\n- Invoke the LinkedIn reaction skill with reaction_type 'like'.",
+                            "criticism": "I lack the actual account ID, so the reaction may not be executed without valid credentials.",
+                            "speak": "I will attempt to like the post using the provided post ID."
+                        },
+                        "skill": {
+                            "name": "LinkedIn - Post a reaction",
+                            "id": "692ed42768884a5de765178a",
+                            "input": {
+                                "account_id": "your_account_id",
+                                "post_id": "urn:li:activity:7313790146720538625",
+                                "reaction_type": "like"
+                            }
+                        }
+                    },
+                    "max_tokens": 10000,
+                    "model": "bedrock/gpt-oss-20b",
+                    "output_data": {
+                        "reactions": {
+                            "object": "ReactionAdded"
+                        }
+                    },
+                    "summary": "LinkedIn Post Liker acting as Post Liker has executed a reaction addition to a post.",
+                    "temperature": 0,
+                    "type": "output"
+                }
+            ]
+        }
+    }
+
     const status = logs?.status || "pending";
     const agentflow = logs?.agentflow;
 
