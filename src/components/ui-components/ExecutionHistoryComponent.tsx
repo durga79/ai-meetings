@@ -96,7 +96,7 @@ function ExecutionListItem({
     return (
         <button
             onClick={onClick}
-            className="w-full p-4 bg-surface-container-default-lighter rounded-lg border border-stroke-default hover:border-surface-interactive-brand transition-colors text-left"
+            className="w-full p-4 bg-surface-container-default-lighter rounded-lg border border-stroke-soft hover:border-surface-interactive-brand transition-colors text-left"
         >
             <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">

@@ -50,7 +50,7 @@ export default function ExecutionDataComponent({
 
     return (
         <div className="flex flex-col items-center w-full px-6 py-12">
-            <div className="w-full max-w-4xl bg-surface-container-default rounded-lg shadow-lg">
+            <div className="w-full max-w-4xl bg-surface-container-default rounded-lg shadow-lg border border-stroke-subtle">
                 {/* Header */}
                 <div className="p-6 border-b border-stroke-default">
                     <div className="flex items-start gap-4">
@@ -117,7 +117,7 @@ function AgentCard({
     const status = context?.status || "pending";
 
     return (
-        <div className="bg-surface-container-default-lighter rounded-lg border border-stroke-default overflow-hidden">
+        <div className="bg-surface-container-default-lighter rounded-lg border border-stroke-soft overflow-hidden">
             {/* Agent Header */}
             <button
                 onClick={onToggle}
@@ -146,7 +146,7 @@ function AgentCard({
 
             {/* Agent Details */}
             {isExpanded && context && (
-                <div className="px-4 py-3 border-t border-stroke-default space-y-4">
+                <div className="px-4 py-3 border-t border-stroke-soft space-y-4">
                     {/* Thoughts */}
                     {context.llm_output?.thoughts && (
                         <div>

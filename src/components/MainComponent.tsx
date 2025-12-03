@@ -50,9 +50,9 @@ export default function MainComponent({
     };
 
     return (
-        <div className={cn("h-full w-full flex flex-col", className)}>
+        <div className={cn("h-full w-full flex flex-col bg-background", className)}>
             {/* Header */}
-            <header className="p-6 border-b border-stroke-default bg-surface-container-default">
+            <header className="p-6 border-b border-stroke-soft bg-surface-container-default">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-text-inverse-default">
@@ -137,7 +137,7 @@ export default function MainComponent({
                         <h2 className="text-lg font-semibold text-text-inverse-default mb-4">
                             Received Data (Debug)
                         </h2>
-                        <div className="bg-surface-container-default-lighter p-4 rounded-lg border border-stroke-default">
+                        <div className="bg-surface-container-default p-4 rounded-lg border border-stroke-soft">
                             <pre className="text-xs font-mono text-text-inverse-subtle overflow-auto">
                                 {JSON.stringify({ data, props }, null, 2)}
                             </pre>
@@ -153,7 +153,7 @@ export default function MainComponent({
 
 function InfoCard({ title, value }: { title: string; value: string }) {
     return (
-        <div className="p-4 bg-surface-container-default-lighter rounded-lg border border-stroke-default">
+        <div className="p-4 bg-surface-container-default rounded-lg border border-stroke-soft">
             <p className="text-xs text-text-inverse-subtlest uppercase tracking-wide mb-1">
                 {title}
             </p>
@@ -168,7 +168,7 @@ function ActionButton({ label, onClick }: { label: string; onClick: () => void }
     return (
         <button
             onClick={onClick}
-            className="p-3 text-sm text-text-inverse-default bg-surface-container-default-lighter rounded-lg border border-stroke-default hover:border-surface-interactive-brand transition-colors text-left"
+            className="p-3 text-sm text-text-inverse-default bg-surface-container-default rounded-lg border border-stroke-soft hover:border-surface-interactive-brand transition-colors text-left"
         >
             {label}
         </button>
