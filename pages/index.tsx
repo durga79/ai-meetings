@@ -3,6 +3,7 @@ import MainComponent from "@/components/MainComponent";
 import { UI_COMPONENT_MAP } from "@/components/UIComponentMap";
 import { EXECUTION_COMPONENT_MAP } from "@/components/ExecutionComponentMap";
 import { UIKEY } from "@/types";
+import ThemeToggle from "@/components/ThemeToggle";
 
 /**
  * Development Index Page
@@ -45,6 +46,7 @@ export default function DevPage() {
                         >
                             Execution Components
                         </ViewButton>
+                        <ThemeToggle />
                     </div>
                 </div>
             </div>

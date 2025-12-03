@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import "@/styles/globals.css";
+import { ThemeProvider } from "next-themes";
 
 /**
  * Custom App Component
@@ -9,5 +10,9 @@ import "@/styles/globals.css";
  * provides its own App wrapper.
  */
 export default function App({ Component, pageProps }: AppProps) {
-    return <Component {...pageProps} />;
+    return (
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+            <Component {...pageProps} />
+        </ThemeProvider>
+    );
 }
