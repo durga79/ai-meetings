@@ -125,7 +125,7 @@ function ProcessFlowItem({
                 </div>
                 <button
                     onClick={onClick}
-                    className="ml-4 px-3 py-1.5 bg-surface-interactive-brand text-white text-sm rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors flex items-center gap-1"
+                    className="ml-4 px-3 py-1.5 bg-surface-interactive-brand text-primary-foreground text-sm rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors flex items-center gap-1"
                 >
                     <Play className="w-3 h-3" />
                     Run

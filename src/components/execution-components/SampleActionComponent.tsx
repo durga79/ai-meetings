@@ -125,20 +125,20 @@ function StatusIcon({ status }: { status: string }) {
         case "completed":
             return (
                 <div className={cn(baseClass, "bg-semantic-success-surface")}>
-                    <Check className={cn(iconClass, "text-white")} strokeWidth={3} />
+                    <Check className={cn(iconClass, "text-primary-foreground")} strokeWidth={3} />
                 </div>
             );
         case "failed":
         case "error":
             return (
                 <div className={cn(baseClass, "bg-semantic-error-surface")}>
-                    <X className={cn(iconClass, "text-white")} strokeWidth={3} />
+                    <X className={cn(iconClass, "text-primary-foreground")} strokeWidth={3} />
                 </div>
             );
         case "running":
             return (
                 <div className={cn(baseClass, "bg-surface-interactive-brand")}>
-                    <Loader className={cn(iconClass, "text-white animate-spin")} />
+                    <Loader className={cn(iconClass, "text-primary-foreground animate-spin")} />
                 </div>
             );
         default:

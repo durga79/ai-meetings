@@ -75,6 +75,7 @@
         --surface-interactive-secondary: 0 0% 100%;
         --surface-interactive-secondary-pressed: 240 19% 94%;
         --surface-interactive-secondary-raised: 240 20% 97%;
+        --surface-interactive-subtle: 240 19% 94%;
         --surface-inverse: 240 16% 5%;
         --surface-inverse-fade: 0 0% 100%;
         --surface-inverse-subtle: 240 20% 97%;
@@ -159,6 +160,7 @@
         --surface-interactive-secondary: 240 16% 2%;
         --surface-interactive-secondary-pressed: 240 19% 94%;
         --surface-interactive-secondary-raised: 240 18% 10%;
+        --surface-interactive-subtle: 237 16% 24%;
         --surface-inverse: 0 0% 100%;
         --surface-inverse-fade: 0 0% 100%;
         --surface-inverse-subtle: 240 20% 97%;

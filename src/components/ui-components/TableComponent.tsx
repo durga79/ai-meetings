@@ -83,7 +83,7 @@ export default function TableComponent({
                 </p>
                 <button
                     onClick={onRefetchTableData}
-                    className="mt-4 px-4 py-2 bg-surface-interactive-brand text-white rounded-lg"
+                    className="mt-4 px-4 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg"
                 >
                     Retry
                 </button>
@@ -106,7 +106,7 @@ export default function TableComponent({
                         column_id: `col_${Date.now()}`,
                     }])}
                     disabled={isAddingColumn}
-                    className="mt-4 px-4 py-2 bg-surface-interactive-brand text-white rounded-lg disabled:opacity-50"
+                    className="mt-4 px-4 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg disabled:opacity-50"
                 >
                     {isAddingColumn ? "Adding..." : "Add Column"}
                 </button>
@@ -140,7 +140,7 @@ export default function TableComponent({
                             {displayColumns.map((column) => (
                                 <th
                                     key={column.column_id}
-                                    className="px-4 py-3 text-left text-xs font-medium text-text-inverse-subtlest uppercase tracking-wider cursor-pointer hover:bg-surface-inverse-fade"
+                                    className="px-4 py-3 text-left text-xs font-medium text-text-inverse-subtlest uppercase tracking-wider cursor-pointer hover:bg-surface-container-raised"
                                     onClick={() => {
                                         onSortingChange({
                                             sort_key: column.column_id,
@@ -208,7 +208,7 @@ export default function TableComponent({
                 <div className="flex items-center gap-4">
                     <button
                         onClick={onCreateRow || onAddRow}
-                        className="px-4 py-2 bg-surface-interactive-brand text-white rounded-lg flex items-center gap-2 hover:bg-surface-interactive-brand-pressed"
+                        className="px-4 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg flex items-center gap-2 hover:bg-surface-interactive-brand-pressed"
                     >
                         <Plus className="w-4 h-4" />
                         Add Row

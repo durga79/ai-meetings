@@ -121,7 +121,7 @@ function AgentCard({
             {/* Agent Header */}
             <button
                 onClick={onToggle}
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-surface-inverse-fade transition-colors"
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-surface-container-raised transition-colors"
             >
                 <div className="flex items-center gap-3">
                     <StatusIcon status={status} />
@@ -231,20 +231,20 @@ function StatusIcon({ status, size = "sm" }: { status?: string; size?: "sm" | "l
         case "completed":
             return (
                 <div className={cn(wrapperClass, "bg-semantic-success-surface")}>
-                    <Check className={cn(iconClass, "text-white")} strokeWidth={3} />
+                    <Check className={cn(iconClass, "text-primary-foreground")} strokeWidth={3} />
                 </div>
             );
         case "failed":
         case "error":
             return (
                 <div className={cn(wrapperClass, "bg-semantic-error-surface")}>
-                    <X className={cn(iconClass, "text-white")} strokeWidth={3} />
+                    <X className={cn(iconClass, "text-primary-foreground")} strokeWidth={3} />
                 </div>
             );
         case "running":
             return (
                 <div className={cn(wrapperClass, "bg-surface-interactive-brand")}>
-                    <Loader className={cn(iconClass, "text-white animate-spin")} />
+                    <Loader className={cn(iconClass, "text-primary-foreground animate-spin")} />
                 </div>
             );
         default:

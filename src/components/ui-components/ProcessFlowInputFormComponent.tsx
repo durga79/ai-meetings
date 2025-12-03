@@ -160,7 +160,7 @@ export default function ProcessFlowInputFormComponent({
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="px-6 py-2 bg-surface-interactive-brand text-white rounded-lg font-medium hover:bg-surface-interactive-brand-pressed disabled:opacity-50 transition-colors flex items-center gap-2"
+                            className="px-6 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg font-medium hover:bg-surface-interactive-brand-pressed disabled:opacity-50 transition-colors flex items-center gap-2"
                         >
                             <Play className="w-4 h-4" />
                             {isSubmitting ? "Starting..." : "Run Process Flow"}

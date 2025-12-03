@@ -74,7 +74,7 @@ export default function TablesListComponent({
                         {(tables.length > 0 || search) && (
                             <button
                                 onClick={onCreateTable}
-                                className="px-4 py-2 bg-surface-interactive-brand text-white rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors flex items-center gap-2"
+                                className="px-4 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors flex items-center gap-2"
                             >
                                 <Plus className="w-4 h-4" />
                                 New Table
@@ -110,7 +110,7 @@ export default function TablesListComponent({
                         {!search && (
                             <button
                                 onClick={onCreateTable}
-                                className="mt-4 px-4 py-2 bg-surface-interactive-brand text-white rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors"
+                                className="mt-4 px-4 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors"
                             >
                                 Create Table
                             </button>

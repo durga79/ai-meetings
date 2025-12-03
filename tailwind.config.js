@@ -149,6 +149,7 @@ module.exports = {
                         secondary: "hsl(var(--surface-interactive-secondary))",
                         "secondary-pressed": "hsl(var(--surface-interactive-secondary-pressed))",
                         "secondary-raised": "hsl(var(--surface-interactive-secondary-raised))",
+                        subtle: "hsl(var(--surface-interactive-subtle))",
                     },
                     inverse: {
                         DEFAULT: "hsl(var(--surface-inverse))",

@@ -65,7 +65,7 @@ export default function MainComponent({
                     {canGoBack && (
                         <button
                             onClick={goBack}
-                            className="px-4 py-2 text-sm bg-surface-container-default-lighter text-text-inverse-default rounded-lg hover:bg-surface-inverse-fade transition-colors"
+                            className="px-4 py-2 text-sm bg-surface-container-default-lighter text-text-inverse-default rounded-lg hover:bg-surface-container-raised transition-colors"
                         >
                             Go Back
                         </button>
@@ -124,7 +124,7 @@ export default function MainComponent({
                     <div className="flex gap-2">
                         <button
                             onClick={() => handleSendMessage("Show me my process flows")}
-                            className="px-4 py-2 bg-surface-interactive-brand text-white rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors"
+                            className="px-4 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors"
                         >
                             Ask: "Show me my process flows"
                         </button>
