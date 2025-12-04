@@ -5,6 +5,8 @@ const LinkedinPostRetriever = ({
   logs,
   isLoading,
   isFetching,
+  setUIKey,
+  handleMessageSubmit,
 }: ExecutionComponentProps) => {
   
   const isBusy = isLoading || isFetching

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { ExecutionComponentProps } from "@/types";
+import { ExecutionComponentProps, UIKEY } from "@/types";
 import { Check, X, Loader, Clock, ChevronDown, ChevronUp } from "lucide-react";
 
 /**
@@ -15,6 +15,8 @@ import { Check, X, Loader, Clock, ChevronDown, ChevronUp } from "lucide-react";
  * - logs: Execution logs containing status, agents, context
  * - isLoading: Whether logs are being loaded
  * - isFetching: Whether logs are being refetched
+ * - setUIKey: Function to navigate to different screens
+ * - handleMessageSubmit: Function to send messages to chat
  * 
  * Usage:
  * 1. Create a component that accepts ExecutionComponentProps
@@ -25,8 +27,15 @@ export default function SampleActionComponent({
     logs,
     isLoading,
     isFetching,
+    setUIKey,
+    handleMessageSubmit,
 }: ExecutionComponentProps) {
     const [isExpanded, setIsExpanded] = React.useState(true);
+
+    // Navigation helper
+    const navigateTo = (uiKey: UIKEY) => {
+        setUIKey?.(uiKey);
+    };
 
     // Loading state
     if (isLoading) {
@@ -97,6 +106,23 @@ export default function SampleActionComponent({
                             <li>• Provide interactive elements for user input</li>
                             <li>• Display rich media (images, charts, etc.)</li>
                         </ul>
+                        
+                        {/* Example: Navigation and messaging */}
+                        <div className="mt-4 pt-4 border-t border-stroke-default flex gap-2">
+                            <button
+                                onClick={() => navigateTo(UIKEY.HOME)}
+                                className="text-xs text-surface-interactive-brand hover:underline"
+                            >
+                                Go to Home
+                            </button>
+                            <span className="text-text-inverse-subtlest">•</span>
+                            <button
+                                onClick={() => handleMessageSubmit?.("Tell me more about this execution")}
+                                className="text-xs text-surface-interactive-brand hover:underline"
+                            >
+                                Ask about execution
+                            </button>
+                        </div>
                     </div>
 
                     {/* Execution Context (debug) */}

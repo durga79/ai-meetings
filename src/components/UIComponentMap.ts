@@ -35,7 +35,6 @@ import { UIKEY } from "@/types";
 
 // Import all UI components
 import HomeComponent from "./ui-components/HomeComponent";
-import ExecutionHistoryComponent from "./ui-components/ExecutionHistoryComponent";
 import ProcessFlowListComponent from "./ui-components/ProcessFlowListComponent";
 import TablesListComponent from "./ui-components/TablesListComponent";
 import TableComponent from "./ui-components/TableComponent";
@@ -43,6 +42,8 @@ import InsertTableRowComponent from "./ui-components/InsertTableRowComponent";
 import CreateTableComponent from "./ui-components/CreateTableComponent";
 import ProcessFlowInputFormComponent from "./ui-components/ProcessFlowInputFormComponent";
 import ExecutionDataComponent from "./ui-components/ExecutionDataComponent";
+import ConfigurationComponent from "./ui-components/ConfigurationComponent";
+import { ExecutionHistoryComponent, } from "./ui-components";
 
 /**
  * UI_COMPONENT_MAP
@@ -80,6 +81,10 @@ export const UI_COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
     
     // Execution data - detailed view of a single execution
     [UIKEY.EXECUTION_DATA]: ExecutionDataComponent,
+
+    // Configuration page - agent configuration
+    [UIKEY.CONFIGURATION_PAGE]: ConfigurationComponent,
+
 };
 
 export default UI_COMPONENT_MAP;

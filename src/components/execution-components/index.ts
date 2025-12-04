@@ -5,4 +5,4 @@
  */
 
 export { default as SampleActionComponent } from "./SampleActionComponent";
-export { default as DataProcessingActionComponent } from "./DataProcessingActionComponent";
+export { default as LinkedinPostRetriever } from "./LinkedinPostRetriever";
