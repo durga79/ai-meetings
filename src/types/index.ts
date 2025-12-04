@@ -5,6 +5,8 @@
  * They should match the types expected by the host application.
  */
 
+import React from "react";
+
 // =============================================================================
 // UIKEY Enum - Maps to DEFAULT_COMPONENT_MAP in host
 // =============================================================================
@@ -20,7 +22,9 @@ export enum UIKEY {
     EXECUTION_DATA = "execution_data_page",
     PROCESSFLOW_INPUT_FORM = "processflow_input_form_page",
     EXECUTION_CHAIN = "execution_chain_page",
+    CONFIGURATION_PAGE = "configuration_page",
 }
+
 
 // =============================================================================
 // Base Microfrontend Props - Passed to all components from host
@@ -67,8 +71,10 @@ export interface ExecutionComponentProps {
     isLoading: boolean;
     /** Whether the logs are being refetched */
     isFetching: boolean;
-    /** Optional callback for sending messages/events back to host */
-    handleMessageSubmit?: (payload: any) => void;
+    /** Function to navigate to a different UI key */
+    setUIKey?: (key: string) => void;
+    /** Function to send a message to the chat */
+    handleMessageSubmit?: (message: string) => void;
 }
 
 // =============================================================================
@@ -402,4 +408,61 @@ export interface ExecutionDataComponentProps {
     logs?: LogsOutput;
     coworker?: AgentFlow;
     loadingCoworker?: boolean;
+}
+
+// =============================================================================
+// Configuration Page Component Props
+// =============================================================================
+
+/**
+ * Connector metadata from the public connectors API
+ * Used to enrich configuration items with real logos and descriptions
+ */
+export interface ConnectorMetadata {
+    name: string;
+    logo: string;
+    description: string;
+    category: string;
+}
+
+/**
+ * Configuration item representing a connector to be configured
+ * In the template, only `category` is required. The wrapper enriches with metadata from API.
+ */
+export interface ConfigurationItem {
+    /** Unique category identifier for the connector (REQUIRED) */
+    category: string;
+    /** Display name for the connector (optional - will be fetched from API if not provided) */
+    name?: string;
+    /** Description of what the connector does (optional - will be fetched from API if not provided) */
+    description?: string;
+    /** Optional icon component */
+    icon?: React.ReactNode;
+    /** Optional logo URL (will be fetched from API if not provided) */
+    logo?: string;
+    /** Whether this connector is required */
+    required?: boolean;
+    /** Whether this connector is already configured */
+    isConfigured?: boolean;
+}
+
+export interface ConfigurationPageComponentProps extends MicrofrontendComponentProps {
+    props?: {
+        /** Title for the configuration page */
+        title?: string;
+        /** Subtitle/description for the configuration page */
+        subtitle?: string;
+        /** List of required configuration items */
+        requiredItems?: ConfigurationItem[];
+        /** List of optional configuration items */
+        optionalItems?: ConfigurationItem[];
+        /** Project ID override (defaults to user's current project) */
+        project_id?: string;
+    };
+    /** Function to open connector configuration sheet for a specific category */
+    openConnectorConfiguration?: (category: string) => void;
+    /** Set of configured category names (lowercase) for quick lookup */
+    configuredCategories?: Set<string>;
+    /** Map of connector metadata by category (lowercase) - provides logo, name, description from API */
+    connectorMetadataMap?: Map<string, ConnectorMetadata>;
 }

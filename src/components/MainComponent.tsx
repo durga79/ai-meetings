@@ -65,7 +65,7 @@ export default function MainComponent({
                     {canGoBack && (
                         <button
                             onClick={goBack}
-                            className="px-4 py-2 text-sm bg-surface-container-default-lighter text-text-inverse-default rounded-lg hover:bg-surface-container-raised transition-colors"
+                            className="px-4 py-2 text-sm bg-surface-container-default-lighter text-text-inverse-default rounded-lg hover:bg-surface-container-raised transition-colors border border-stroke-soft"
                         >
                             Go Back
                         </button>
@@ -124,7 +124,7 @@ export default function MainComponent({
                     <div className="flex gap-2">
                         <button
                             onClick={() => handleSendMessage("Show me my process flows")}
-                            className="px-4 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors"
+                            className="px-4 py-2 bg-surface-interactive-brand text-white rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors"
                         >
                             Ask: "Show me my process flows"
                         </button>
@@ -137,7 +137,7 @@ export default function MainComponent({
                         <h2 className="text-lg font-semibold text-text-inverse-default mb-4">
                             Received Data (Debug)
                         </h2>
-                        <div className="bg-surface-container-default p-4 rounded-lg border border-stroke-soft">
+                        <div className="bg-surface-container-default-lighter p-4 rounded-lg border border-stroke-soft">
                             <pre className="text-xs font-mono text-text-inverse-subtle overflow-auto">
                                 {JSON.stringify({ data, props }, null, 2)}
                             </pre>

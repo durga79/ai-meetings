@@ -96,31 +96,14 @@ export default function HomeComponent({
 
                 {/* Chat prompt example */}
                 <div className="mt-8 pt-6 border-t border-stroke-default">
-                    <p className="text-xs text-text-inverse-subtlest mb-3">
-                        Or ask me directly:
-                    </p>
                     <button
-                        onClick={() => handleMessageSubmit?.("What can you help me with?")}
+                        onClick={() => setUIKey?.(UIKEY.CONFIGURATION_PAGE)}
                         className="text-sm text-surface-interactive-brand hover:underline"
                     >
-                        "What can you help me with?"
+                        Get Started
                     </button>
                 </div>
             </div>
-
-            {/* Debug Info (remove in production) */}
-            {data && Object.keys(data).length > 0 && (
-                <details className="w-full">
-                    <summary className="text-sm text-text-inverse-subtle hover:text-text-inverse-default cursor-pointer">
-                        View Debug Info
-                    </summary>
-                    <div className="mt-2 p-4 rounded-lg bg-surface-container-default-lighter border border-stroke-default">
-                        <pre className="text-xs font-mono text-text-inverse-default overflow-auto max-h-64">
-                            {JSON.stringify(data, null, 2)}
-                        </pre>
-                    </div>
-                </details>
-            )}
         </div>
     );
 }
