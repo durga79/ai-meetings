@@ -3,6 +3,8 @@ import { UI_COMPONENT_MAP } from "@/components/UIComponentMap";
 import { EXECUTION_COMPONENT_MAP } from "@/components/ExecutionComponentMap";
 import MainComponent from "@/components/MainComponent";
 import ThemeToggle from "@/components/ThemeToggle";
+import Logo from "@/components/Logo";
+import WelcomeScreen from "@/components/WelcomeScreen";
 import { UIKEY } from "@/types";
 
 interface ChatMessage {
@@ -19,16 +21,16 @@ export default function DevPage() {
     const [uiProps, setUiProps] = useState<Record<string, any>>({});
     const [activeTab, setActiveTab] = useState<SidebarTab>("ui");
     const [showDropdown, setShowDropdown] = useState(false);
-    const [messages, setMessages] = useState<ChatMessage[]>([
-        {
-            id: "1",
-            role: "assistant",
-            content: "Welcome! Select a component type from the sidebar to get started.",
-            timestamp: new Date(),
-        },
-    ]);
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [inputValue, setInputValue] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Execution component state
+    const [showLogsDialog, setShowLogsDialog] = useState(false);
+    const [customLogs, setCustomLogs] = useState<string>("");
+    const [executionIsLoading, setExecutionIsLoading] = useState(false);
+    const [executionIsFetching, setExecutionIsFetching] = useState(false);
+    const [parsedLogs, setParsedLogs] = useState<any>(null);
 
     const allUIKeys = Object.values(UIKEY);
     const allExecutionKeys = Object.keys(EXECUTION_COMPONENT_MAP);
@@ -108,14 +110,52 @@ export default function DevPage() {
             const actionId = selectedUIKey.replace("execution:", "");
             const Component = EXECUTION_COMPONENT_MAP[actionId];
             if (Component) {
+                const logsData = parsedLogs || getMockExecutionLogs(actionId);
                 return (
-                    <Component
-                        logs={getMockExecutionLogs(actionId)}
-                        isLoading={false}
-                        isFetching={false}
-                        setUIKey={handleSetUIKey}
-                        handleMessageSubmit={handleMessageSubmit}
-                    />
+                    <div className="h-full flex flex-col">
+                        {/* Execution Controls Bar */}
+                        <div className="p-3 border-b border-stroke-soft bg-surface-container-default-lighter flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <span className="text-xs font-medium text-text-inverse-subtlest uppercase tracking-wider">Execution: {actionId}</span>
+                                <div className="flex items-center gap-2">
+                                    <label className="flex items-center gap-1.5 text-xs text-text-inverse-subtle">
+                                        <input
+                                            type="checkbox"
+                                            checked={executionIsLoading}
+                                            onChange={(e) => setExecutionIsLoading(e.target.checked)}
+                                            className="w-3.5 h-3.5 rounded border-stroke-soft accent-surface-interactive-brand"
+                                        />
+                                        isLoading
+                                    </label>
+                                    <label className="flex items-center gap-1.5 text-xs text-text-inverse-subtle">
+                                        <input
+                                            type="checkbox"
+                                            checked={executionIsFetching}
+                                            onChange={(e) => setExecutionIsFetching(e.target.checked)}
+                                            className="w-3.5 h-3.5 rounded border-stroke-soft accent-surface-interactive-brand"
+                                        />
+                                        isFetching
+                                    </label>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowLogsDialog(true)}
+                                className="px-3 py-1.5 text-xs font-medium bg-surface-interactive-brand text-white rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors flex items-center gap-1.5"
+                            >
+                                <span>📝</span> Edit Logs
+                            </button>
+                        </div>
+                        {/* Component */}
+                        <div className="flex-1 overflow-auto">
+                            <Component
+                                logs={logsData}
+                                isLoading={executionIsLoading}
+                                isFetching={executionIsFetching}
+                                setUIKey={handleSetUIKey}
+                                handleMessageSubmit={handleMessageSubmit}
+                            />
+                        </div>
+                    </div>
                 );
             }
             return <EmptyState text="Component not found" />;
@@ -145,8 +185,8 @@ export default function DevPage() {
         <div className="h-screen flex bg-background text-text-inverse-default overflow-hidden">
             {/* Icon Sidebar */}
             <div className="w-14 bg-sidebar border-r border-sidebar-border flex flex-col items-center py-4">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-purple-600 to-accent-pink-600 flex items-center justify-center mb-8 shadow-md shadow-brand-purple-950/40">
-                    <span className="text-white text-sm font-bold">⚡</span>
+                <div className="mb-8">
+                    <Logo size="sm" />
                 </div>
 
                 <div className="flex-1 flex flex-col gap-2">
@@ -218,25 +258,29 @@ export default function DevPage() {
 
                 {/* Chat Messages */}
                 <div className="flex-1 overflow-y-auto p-4">
-                    <div className="space-y-4">
-                        {messages.map((msg) => (
-                            <div
-                                key={msg.id}
-                                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                            >
+                    {messages.length === 0 ? (
+                        <WelcomeScreen />
+                    ) : (
+                        <div className="space-y-4">
+                            {messages.map((msg) => (
                                 <div
-                                    className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
-                                        msg.role === "user"
-                                            ? "bg-gradient-to-r from-surface-interactive-brand to-accent-pink-600 text-white rounded-br-md"
-                                            : "bg-surface-container-default-lighter text-text-inverse-default rounded-bl-md border border-stroke-soft"
-                                    }`}
+                                    key={msg.id}
+                                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                                 >
-                                    {msg.content}
+                                    <div
+                                        className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
+                                            msg.role === "user"
+                                                ? "bg-gradient-to-r from-surface-interactive-brand to-accent-pink-600 text-white rounded-br-md"
+                                                : "bg-surface-container-default-lighter text-text-inverse-default rounded-bl-md border border-stroke-soft"
+                                        }`}
+                                    >
+                                        {msg.content}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                        <div ref={messagesEndRef} />
-                    </div>
+                            ))}
+                            <div ref={messagesEndRef} />
+                        </div>
+                    )}
                 </div>
 
                 {/* Chat Input */}
@@ -273,6 +317,33 @@ export default function DevPage() {
             <div className="w-2/3 overflow-y-auto bg-surface-container-default">
                 {renderComponent()}
             </div>
+
+            {/* Logs Dialog */}
+            {showLogsDialog && (
+                <ExecutionLogsDialog
+                    isOpen={showLogsDialog}
+                    onClose={() => setShowLogsDialog(false)}
+                    logsJson={customLogs}
+                    onLogsChange={setCustomLogs}
+                    onApply={(logs) => {
+                        try {
+                            const parsed = JSON.parse(logs);
+                            setParsedLogs(parsed);
+                            setShowLogsDialog(false);
+                            addMessage("assistant", "Custom logs applied to execution component");
+                        } catch (e) {
+                            alert("Invalid JSON format. Please check your logs data.");
+                        }
+                    }}
+                    onReset={() => {
+                        setCustomLogs("");
+                        setParsedLogs(null);
+                        setShowLogsDialog(false);
+                        addMessage("assistant", "Logs reset to default mock data");
+                    }}
+                    defaultLogs={getMockExecutionLogs(selectedUIKey.replace("execution:", ""))}
+                />
+            )}
         </div>
     );
 }
@@ -391,4 +462,167 @@ function getMockExecutionLogs(actionId: string) {
             },
         },
     };
+}
+
+// Execution Logs Dialog Component
+interface ExecutionLogsDialogProps {
+    isOpen: boolean;
+    onClose: () => void;
+    logsJson: string;
+    onLogsChange: (logs: string) => void;
+    onApply: (logs: string) => void;
+    onReset: () => void;
+    defaultLogs: any;
+}
+
+function ExecutionLogsDialog({
+    isOpen,
+    onClose,
+    logsJson,
+    onLogsChange,
+    onApply,
+    onReset,
+    defaultLogs,
+}: ExecutionLogsDialogProps) {
+    const [localLogs, setLocalLogs] = useState(logsJson || JSON.stringify(defaultLogs, null, 2));
+    const [jsonError, setJsonError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (isOpen && !logsJson) {
+            setLocalLogs(JSON.stringify(defaultLogs, null, 2));
+        }
+    }, [isOpen, defaultLogs, logsJson]);
+
+    const handleLogsChange = (value: string) => {
+        setLocalLogs(value);
+        onLogsChange(value);
+        // Validate JSON
+        try {
+            JSON.parse(value);
+            setJsonError(null);
+        } catch (e) {
+            setJsonError("Invalid JSON format");
+        }
+    };
+
+    const handleApply = () => {
+        if (!jsonError) {
+            onApply(localLogs);
+        }
+    };
+
+    const handleLoadDefault = () => {
+        const defaultJson = JSON.stringify(defaultLogs, null, 2);
+        setLocalLogs(defaultJson);
+        onLogsChange(defaultJson);
+        setJsonError(null);
+    };
+
+    const handleFormat = () => {
+        try {
+            const parsed = JSON.parse(localLogs);
+            const formatted = JSON.stringify(parsed, null, 2);
+            setLocalLogs(formatted);
+            onLogsChange(formatted);
+            setJsonError(null);
+        } catch (e) {
+            // Keep current value if invalid
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Backdrop */}
+            <div 
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={onClose}
+            />
+            
+            {/* Dialog */}
+            <div className="relative w-full max-w-4xl max-h-[95vh] min-h-[65vh] mx-4 bg-surface-container-default rounded-2xl shadow-2xl border border-stroke-soft flex flex-col overflow-hidden">
+                {/* Header */}
+                <div className="p-4 border-b border-stroke-soft flex items-center justify-between bg-surface-container-default-lighter">
+                    <div>
+                        <h2 className="text-lg font-semibold text-text-inverse-default">Edit Execution Logs</h2>
+                        <p className="text-xs text-text-inverse-subtlest mt-0.5">Customize the logs data passed to the execution component</p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-text-inverse-subtle hover:text-text-inverse-default hover:bg-surface-container-raised transition-colors"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 p-4 overflow-hidden flex flex-col gap-4">
+                    {/* Toolbar */}
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleLoadDefault}
+                            className="px-3 py-1.5 text-xs font-medium bg-surface-container-default-lighter text-text-inverse-subtle rounded-lg border border-stroke-soft hover:bg-surface-container-raised hover:text-text-inverse-default transition-colors"
+                        >
+                            Load Default
+                        </button>
+                        <button
+                            onClick={handleFormat}
+                            className="px-3 py-1.5 text-xs font-medium bg-surface-container-default-lighter text-text-inverse-subtle rounded-lg border border-stroke-soft hover:bg-surface-container-raised hover:text-text-inverse-default transition-colors"
+                        >
+                            Format JSON
+                        </button>
+                        {jsonError && (
+                            <span className="text-xs text-semantic-error-surface ml-2">{jsonError}</span>
+                        )}
+                    </div>
+
+                    {/* JSON Editor */}
+                    <div className="flex-1 min-h-[48vh] overflow-hidden rounded-lg border border-stroke-soft">
+                        <textarea
+                            value={localLogs}
+                            onChange={(e) => handleLogsChange(e.target.value)}
+                            className="w-full h-full min-h-[46vh] p-4 bg-surface-container-sunken text-text-inverse-default font-mono text-xs resize-none focus:outline-none focus:ring-2 focus:ring-surface-interactive-brand/50"
+                            placeholder="Enter JSON logs data..."
+                            spellCheck={false}
+                        />
+                    </div>
+
+                    {/* Help Text */}
+                    <div className="text-xs text-text-inverse-subtlest bg-surface-container-default-lighter p-3 rounded-lg">
+                        <strong className="text-text-inverse-subtle">Tip:</strong> The logs object should match the expected structure for your execution component. 
+                        Common fields include: <code className="bg-surface-container-raised px-1 rounded">status</code>, 
+                        <code className="bg-surface-container-raised px-1 rounded">goal</code>, 
+                        <code className="bg-surface-container-raised px-1 rounded">agentflow</code>, 
+                        <code className="bg-surface-container-raised px-1 rounded">execution_context</code>.
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="p-4 border-t border-stroke-soft flex items-center justify-between bg-surface-container-default-lighter">
+                    <button
+                        onClick={onReset}
+                        className="px-4 py-2 text-sm font-medium text-text-inverse-subtle hover:text-text-inverse-default transition-colors"
+                    >
+                        Reset to Default
+                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={onClose}
+                            className="px-4 py-2 text-sm font-medium bg-surface-container-default-lighter text-text-inverse-default rounded-lg border border-stroke-soft hover:bg-surface-container-raised transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleApply}
+                            disabled={!!jsonError}
+                            className="px-4 py-2 text-sm font-medium bg-surface-interactive-brand text-white rounded-lg hover:bg-surface-interactive-brand-pressed transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Apply Logs
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
