@@ -39,6 +39,15 @@ export default function DevPage() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    const handleLogoClick = () => {
+        // Reset everything to initial state
+        setMessages([]);
+        setSelectedUIKey(UIKEY.HOME);
+        setShowDropdown(false);
+        setActiveTab("ui");
+        setUiProps({});
+    };
+
     const handleTabClick = (tab: SidebarTab) => {
         setActiveTab(tab);
         if (tab === "main") {
@@ -185,9 +194,13 @@ export default function DevPage() {
         <div className="h-screen flex bg-background text-text-inverse-default overflow-hidden">
             {/* Icon Sidebar */}
             <div className="w-14 bg-sidebar border-r border-sidebar-border flex flex-col items-center py-4">
-                <div className="mb-8">
+                <button 
+                    onClick={handleLogoClick}
+                    className="mb-8 transition-transform hover:scale-105 active:scale-95"
+                    title="Reset and go to home"
+                >
                     <Logo size="sm" />
-                </div>
+                </button>
 
                 <div className="flex-1 flex flex-col gap-2">
                     <SidebarIcon
