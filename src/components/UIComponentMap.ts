@@ -43,6 +43,7 @@ import CreateTableComponent from "./ui-components/CreateTableComponent";
 import ProcessFlowInputFormComponent from "./ui-components/ProcessFlowInputFormComponent";
 import ExecutionDataComponent from "./ui-components/ExecutionDataComponent";
 import ConfigurationComponent from "./ui-components/ConfigurationComponent";
+import WelcomePageComponent from "./ui-components/WelcomePageComponent";
 import { ExecutionHistoryComponent, } from "./ui-components";
 
 /**
@@ -85,6 +86,8 @@ export const UI_COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
     // Configuration page - agent configuration
     [UIKEY.CONFIGURATION_PAGE]: ConfigurationComponent,
 
+    // Welcome page - onboarding/getting started
+    [UIKEY.WELCOME_PAGE]: WelcomePageComponent,
 };
 
 export default UI_COMPONENT_MAP;

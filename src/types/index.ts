@@ -13,6 +13,7 @@ import React from "react";
 
 export enum UIKEY {
     HOME = "home",
+    WELCOME_PAGE = "welcome_page",
     PROCESSFLOW_LIST = "processflows_list_page",
     SHOW_TABLE_PAGE = "tables_list_page",
     TABLE_COMPONENT = "table_component_page",
