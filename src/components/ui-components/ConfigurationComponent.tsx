@@ -3,6 +3,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { ConfigurationPageComponentProps, ConfigurationItem } from "@/types";
+import { REQUIRED_CONNECTORS, OPTIONAL_CONNECTORS } from "@/config/required-connectors";
 
 const getDefaultIcon = (category: string): string => {
     const iconMap: Record<string, string> = {
@@ -22,8 +23,9 @@ export default function ConfigurationPageComponent({
     const title = props?.title || "Complete Setup";
     const subtitle = props?.subtitle || "Connect required services to continue";
 
-    const requiredItems = props?.requiredItems || [];
-    const optionalItems = props?.optionalItems || [];
+    // Use props if provided, otherwise use shared config
+    const requiredItems = props?.requiredItems || REQUIRED_CONNECTORS;
+    const optionalItems = props?.optionalItems || OPTIONAL_CONNECTORS;
 
     const getEnrichedItem = (item: ConfigurationItem): ConfigurationItem => {
         const metadata = connectorMetadataMap?.get(item.category.toLowerCase());

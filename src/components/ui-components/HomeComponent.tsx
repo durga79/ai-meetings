@@ -93,16 +93,6 @@ export default function HomeComponent({
                         </button>
                     ))}
                 </div>
-
-                {/* Chat prompt example */}
-                <div className="mt-8 pt-6 border-t border-stroke-default">
-                    <button
-                        onClick={() => setUIKey?.(UIKEY.CONFIGURATION_PAGE)}
-                        className="text-sm text-surface-interactive-brand hover:underline"
-                    >
-                        Get Started
-                    </button>
-                </div>
             </div>
         </div>
     );
