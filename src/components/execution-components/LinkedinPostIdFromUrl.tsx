@@ -2,12 +2,18 @@
 
 import React from "react";
 import { ExecutionComponentProps } from "@/types";
-import SampleActionComponent from "./SampleActionComponent";
 
-const LinkedinPostIdFromUrl = (props: ExecutionComponentProps) => {
-  return <SampleActionComponent {...props} />;
+const LinkedinPostIdFromUrl = ({
+  logs,
+  isLoading,
+  isFetching,
+}: ExecutionComponentProps) => {
+  
+
+  return (
+    <></>
+  );
 };
 
 export default LinkedinPostIdFromUrl;
-
 

@@ -12,10 +12,18 @@ export type ThemeToggleProps = {
 
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className }) => {
     const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const effectiveTheme = mounted ? theme : "light";
 
     const handleToggle = React.useCallback(() => {
-        setTheme(theme === "dark" ? "light" : "dark");
-    }, [theme, setTheme]);
+        const nextTheme = effectiveTheme === "dark" ? "light" : "dark";
+        setTheme(nextTheme);
+    }, [effectiveTheme, setTheme]);
 
     return (
         <button
@@ -27,7 +35,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className }) => {
             )}
             aria-label="Toggle theme"
         >
-            {theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            {effectiveTheme === "dark" ? (
+                <Moon className="h-4 w-4" />
+            ) : (
+                <Sun className="h-4 w-4" />
+            )}
         </button>
     );
 };

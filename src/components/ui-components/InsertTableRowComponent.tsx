@@ -114,9 +114,9 @@ export default function InsertTableRowComponent({
 
     return (
         <div className="flex flex-col items-center w-full px-6 py-12">
-            <div className="w-full max-w-6xl bg-surface-container-default rounded-xl shadow-lg">
+            <div className="w-full max-w-6xl bg-surface-container-default rounded-xl shadow-lg border border-stroke-soft">
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-stroke-default flex items-center justify-between">
+                <div className="px-6 py-4 border-b border-stroke-soft flex items-center justify-between">
                     <div>
                         <h2 className="text-xl font-semibold text-text-inverse-default">
                             Add New Rows - {tableName}
@@ -128,7 +128,7 @@ export default function InsertTableRowComponent({
                     <button
                         type="button"
                         onClick={addRow}
-                        className="px-3 py-1.5 bg-surface-container-default-lighter text-text-inverse-default rounded-lg flex items-center gap-2 hover:bg-surface-inverse-fade transition-colors"
+                        className="px-3 py-1.5 bg-surface-container-default-lighter text-text-inverse-default rounded-lg flex items-center gap-2 hover:bg-surface-container-raised transition-colors"
                     >
                         <Plus className="w-4 h-4" />
                         Add Row
@@ -142,10 +142,10 @@ export default function InsertTableRowComponent({
                             {rows.map((row, rowIndex) => (
                                 <div
                                     key={rowIndex}
-                                    className="p-4 rounded-lg bg-surface-container-default-lighter border border-stroke-default"
+                                    className="p-4 rounded-lg bg-surface-container-default-lighter border border-stroke-soft"
                                 >
                                     {/* Row Header */}
-                                    <div className="flex items-center justify-between pb-3 border-b border-stroke-default">
+                                    <div className="flex items-center justify-between pb-3 border-b border-stroke-soft">
                                         <h3 className="text-base font-semibold text-text-inverse-default">
                                             Row {rowIndex + 1}
                                         </h3>
@@ -154,14 +154,14 @@ export default function InsertTableRowComponent({
                                                 type="button"
                                                 disabled={rows.length === 1}
                                                 onClick={() => removeRow(rowIndex)}
-                                                className="p-2 rounded-full border border-stroke-default hover:bg-surface-container-default disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="p-2 rounded-full border border-stroke-soft hover:bg-surface-container-default disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 <Trash2 className="w-3.5 h-3.5 text-semantic-error-surface" />
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => toggleCollapse(rowIndex)}
-                                                className="p-2 rounded-full border border-stroke-default hover:bg-surface-container-default"
+                                                className="p-2 rounded-full border border-stroke-soft hover:bg-surface-container-default"
                                             >
                                                 {collapsedRows[rowIndex] ? (
                                                     <ChevronDown className="w-3.5 h-3.5 text-text-inverse-subtlest" />
@@ -199,7 +199,7 @@ export default function InsertTableRowComponent({
                         <button
                             type="submit"
                             disabled={isCreatingRecords}
-                            className="px-6 py-2 bg-surface-interactive-brand text-white rounded-lg hover:bg-surface-interactive-brand-pressed disabled:opacity-50 transition-colors"
+                            className="px-6 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg hover:bg-surface-interactive-brand-pressed disabled:opacity-50 transition-colors"
                         >
                             {isCreatingRecords ? "Saving..." : "Save Rows"}
                         </button>

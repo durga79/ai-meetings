@@ -20,11 +20,11 @@ export default function DevPage() {
     const [selectedComponent, setSelectedComponent] = useState<string>("");
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
+        <div className="min-h-screen bg-background text-text-inverse-default">
             {/* Dev Toolbar */}
-            <div className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700 p-4">
+            <div className="sticky top-0 z-50 bg-surface-container-default border-b border-stroke-default p-4">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <h1 className="text-lg font-semibold">
+                    <h1 className="text-lg font-semibold text-text-inverse-default">
                         Microfrontend Template - Dev Mode
                     </h1>
                     <div className="flex items-center gap-2">
@@ -55,11 +55,11 @@ export default function DevPage() {
             <div className="max-w-7xl mx-auto p-4">
                 {currentView === "main" && (
                     <div>
-                        <h2 className="text-xl font-semibold mb-4">Main Component Preview</h2>
-                        <p className="text-gray-400 text-sm mb-4">
+                        <h2 className="text-xl font-semibold text-text-inverse-default mb-4">Main Component Preview</h2>
+                        <p className="text-text-inverse-subtle text-sm mb-4">
                             This is the main component used for fullscreen mode.
                         </p>
-                        <div className="border border-gray-700 rounded-lg overflow-hidden h-[600px]">
+                        <div className="border border-stroke-subtle rounded-lg overflow-hidden h-[600px]">
                             <MainComponent
                                 aiKey="dev-preview"
                                 uiKey="home"
@@ -73,8 +73,8 @@ export default function DevPage() {
 
                 {currentView === "ui" && (
                     <div>
-                        <h2 className="text-xl font-semibold mb-4">UI Components Preview</h2>
-                        <p className="text-gray-400 text-sm mb-4">
+                        <h2 className="text-xl font-semibold text-text-inverse-default mb-4">UI Components Preview</h2>
+                        <p className="text-text-inverse-subtle text-sm mb-4">
                             These components override the host&apos;s DEFAULT_COMPONENT_MAP.
                         </p>
                         
@@ -86,8 +86,8 @@ export default function DevPage() {
                                     onClick={() => setSelectedComponent(key)}
                                     className={`px-3 py-1.5 rounded text-sm ${
                                         selectedComponent === key
-                                            ? "bg-blue-600 text-white"
-                                            : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                            ? "bg-surface-interactive-brand text-primary-foreground"
+                                            : "bg-surface-container-default-lighter text-text-inverse-subtle hover:bg-surface-container-raised"
                                     }`}
                                 >
                                     {key}
@@ -97,13 +97,13 @@ export default function DevPage() {
 
                         {/* Selected Component Preview */}
                         {selectedComponent && UI_COMPONENT_MAP[selectedComponent] && (
-                            <div className="border border-gray-700 rounded-lg overflow-hidden min-h-[500px]">
+                            <div className="border border-stroke-subtle rounded-lg overflow-hidden min-h-[500px]">
                                 {React.createElement(UI_COMPONENT_MAP[selectedComponent], getMockProps(selectedComponent))}
                             </div>
                         )}
 
                         {!selectedComponent && (
-                            <div className="text-center py-12 text-gray-500">
+                            <div className="text-center py-12 text-text-inverse-subtle">
                                 Select a component to preview
                             </div>
                         )}
@@ -112,8 +112,8 @@ export default function DevPage() {
 
                 {currentView === "execution" && (
                     <div>
-                        <h2 className="text-xl font-semibold mb-4">Execution Components Preview</h2>
-                        <p className="text-gray-400 text-sm mb-4">
+                        <h2 className="text-xl font-semibold text-text-inverse-default mb-4">Execution Components Preview</h2>
+                        <p className="text-text-inverse-subtle text-sm mb-4">
                             These components are used in ExecutionChainWrapper for specific actions.
                         </p>
                         
@@ -121,10 +121,10 @@ export default function DevPage() {
                         <div className="space-y-4">
                             {Object.entries(EXECUTION_COMPONENT_MAP).map(([key, Component]) => (
                                 <div key={key}>
-                                    <h3 className="text-sm font-medium text-gray-400 mb-2">
+                                    <h3 className="text-sm font-medium text-text-inverse-subtle mb-2">
                                         Action: {key}
                                     </h3>
-                                    <div className="border border-gray-700 rounded-lg overflow-hidden">
+                                    <div className="border border-stroke-subtle rounded-lg overflow-hidden">
                                         <Component
                                             logs={getMockExecutionLogs(key)}
                                             isLoading={false}
@@ -139,11 +139,11 @@ export default function DevPage() {
             </div>
 
             {/* Info Footer */}
-            <div className="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 p-3">
-                <div className="max-w-7xl mx-auto flex items-center justify-between text-sm text-gray-400">
+            <div className="fixed bottom-0 left-0 right-0 bg-surface-container-default border-t border-stroke-default p-3">
+                <div className="max-w-7xl mx-auto flex items-center justify-between text-sm text-text-inverse-subtle">
                     <div>
                         <strong>RemoteEntry URL:</strong>{" "}
-                        <code className="bg-gray-700 px-1 rounded">
+                        <code className="bg-surface-container-default-lighter px-1 rounded">
                             http://localhost:3004/_next/static/chunks/remoteEntry.js
                         </code>
                     </div>

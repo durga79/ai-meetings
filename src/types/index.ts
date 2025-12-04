@@ -67,6 +67,8 @@ export interface ExecutionComponentProps {
     isLoading: boolean;
     /** Whether the logs are being refetched */
     isFetching: boolean;
+    /** Optional callback for sending messages/events back to host */
+    handleMessageSubmit?: (payload: any) => void;
 }
 
 // =============================================================================

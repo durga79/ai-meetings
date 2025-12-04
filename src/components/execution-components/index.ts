@@ -1,8 +1,2 @@
-/**
- * Execution Components Index
- * 
- * Export all execution action components used in ExecutionChainWrapper
- */
-
-export { default as SampleActionComponent } from "./SampleActionComponent";
-export { default as DataProcessingActionComponent } from "./DataProcessingActionComponent";
+// Execution components index is currently unused.
+// Intentionally left minimal.

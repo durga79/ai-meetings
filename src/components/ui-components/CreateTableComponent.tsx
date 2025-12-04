@@ -131,7 +131,7 @@ export default function CreateTableComponent({
                         <button
                             type="submit"
                             disabled={isCreating || !tableName.trim()}
-                            className="px-6 py-2 bg-surface-interactive-brand text-white rounded-lg font-medium hover:bg-surface-interactive-brand-pressed disabled:opacity-50 transition-colors"
+                            className="px-6 py-2 bg-surface-interactive-brand text-primary-foreground rounded-lg font-medium hover:bg-surface-interactive-brand-pressed disabled:opacity-50 transition-colors"
                         >
                             {isCreating ? "Creating..." : "Create Table"}
                         </button>

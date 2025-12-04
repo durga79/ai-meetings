@@ -37,7 +37,7 @@ export default function HomeComponent({
     const quickActions = [
         {
             id: "processflows",
-            title: "View Process Flows",
+            title: "View Process Flows111",
             description: "Browse and run your automated workflows",
             onClick: () => navigateTo(UIKEY.PROCESSFLOW_LIST),
         },
