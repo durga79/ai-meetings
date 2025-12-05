@@ -43,23 +43,9 @@ export default function HomeComponent({
         }
     };
 
-    // Track if user has already completed onboarding (persisted locally)
-    const [hasOnboarded, setHasOnboarded] = React.useState(false);
-
-    React.useEffect(() => {
-        if (typeof window === "undefined") return;
-        const stored = window.localStorage.getItem("linkedin_autoengage_onboarded");
-        if (stored === "true") {
-            setHasOnboarded(true);
-        }
-    }, []);
-
     // Whether the user has already completed configuration (from host)
-    const completedFromHost = Boolean(
-        props?.hasCompletedConfiguration ?? data?.hasCompletedConfiguration
-    );
-
-    const shouldShowGreeting = !completedFromHost && !hasOnboarded;
+    const hasCompletedConfiguration =
+        Boolean(props?.hasCompletedConfiguration ?? data?.hasCompletedConfiguration);
 
     // Capability actions for this coworker (shown after configuration)
     const quickActions = [
@@ -94,7 +80,7 @@ export default function HomeComponent({
     ];
 
     // First-time greeting card: shown before configuration is completed
-    if (shouldShowGreeting) {
+    if (!hasCompletedConfiguration) {
         return (
             <div
                 className={cn(

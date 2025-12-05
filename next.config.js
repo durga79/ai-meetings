@@ -38,7 +38,7 @@ const nextConfig = {
                      * This MUST match the 'scope' in the host's registry.ts
                      * Convention: camelCase (e.g., myCustomAgent, wexaSheets)
                      */
-                    name: "linkedinPostliker",
+                    name: "linkedinAutoEngage",
                     
                     filename: "static/chunks/remoteEntry.js",
                     

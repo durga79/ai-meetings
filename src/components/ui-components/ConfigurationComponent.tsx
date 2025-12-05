@@ -53,11 +53,6 @@ export default function ConfigurationPageComponent({
             ...(props || {}),
             hasCompletedConfiguration: true,
         });
-
-        // Persist onboarding flag locally so greeting card doesn't reappear
-        if (typeof window !== "undefined") {
-            window.localStorage.setItem("linkedin_autoengage_onboarded", "true");
-        }
         // Navigate back to Home where capabilities are shown
         setUIKey?.(UIKEY.HOME);
     };

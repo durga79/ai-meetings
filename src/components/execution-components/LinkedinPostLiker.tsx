@@ -18,7 +18,6 @@ const LinkedinPostLiker = ({
     : undefined
 
   const input = context?.input_data || {}
-  const thoughts = context?.llm_output?.thoughts || {}
   const reaction = context?.output_data?.reactions
 
   if (isBusy) {
@@ -55,8 +54,6 @@ const LinkedinPostLiker = ({
     )
   }
 
-  const postId = input.post_id
-  const accountId = input.account_id
   const reactionType = input.reaction_type
   const reactionStatus = reaction?.object
 
@@ -78,25 +75,6 @@ const LinkedinPostLiker = ({
           </div>
         </div>
 
-        <div className="rounded-lg bg-[hsl(var(--surface-container-default-lighter))] border border-[hsl(var(--stroke-soft))] px-3 py-2">
-          <p className="text-[10px] uppercase tracking-wide text-[hsl(var(--text-inverse-subtlest))] mb-1">
-            Post ID
-          </p>
-          <p className="text-xs sm:text-sm text-[hsl(var(--text-inverse-default))] break-all">
-            {postId || "Unknown"}
-          </p>
-        </div>
-
-        {thoughts.text && (
-          <div className="pt-2 border-t border-[hsl(var(--stroke-soft))]">
-            <p className="text-[10px] uppercase tracking-wide text-[hsl(var(--text-inverse-subtlest))] mb-1">
-              Agent thoughts
-            </p>
-            <p className="text-xs sm:text-sm text-[hsl(var(--text-inverse-default))]">
-              {thoughts.text}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   )
