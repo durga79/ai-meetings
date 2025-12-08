@@ -32,6 +32,7 @@
  */
 
 import { UIKEY } from "@/types";
+import { REQUIRED_CONNECTORS, OPTIONAL_CONNECTORS } from "@/config/required-connectors";
 
 // Import all UI components
 import HomeComponent from "./ui-components/HomeComponent";
@@ -88,6 +89,19 @@ export const UI_COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
 
     // Welcome page - onboarding/getting started
     [UIKEY.WELCOME_PAGE]: WelcomePageComponent,
+};
+
+/**
+ * AGENT_CONFIG
+ * 
+ * Configuration for the agent including required connectors.
+ * This is loaded by the host wrapper to determine:
+ * - Which connectors are required before the agent can be used
+ * - Whether to auto-redirect from Welcome to Home when all are configured
+ */
+export const AGENT_CONFIG = {
+    requiredConnectors: REQUIRED_CONNECTORS,
+    optionalConnectors: OPTIONAL_CONNECTORS,
 };
 
 export default UI_COMPONENT_MAP;
