@@ -32,13 +32,21 @@ export enum UIKEY {
 // =============================================================================
 
 /**
+ * Share button render props (from coworker-web)
+ */
+export interface ShareButtonRenderProps {
+    resourceId: string | null;
+    resourceTitle?: string;
+}
+
+/**
  * Props passed to all microfrontend components by the host
  */
 export interface MicrofrontendComponentProps {
     /** Data from the host application */
-    data?: Record<string, any>;
+    data?: Record<string, unknown>;
     /** Props specific to the component */
-    props?: Record<string, any>;
+    props?: Record<string, unknown>;
     /** CSS class name for styling */
     className?: string;
     /** The aiKey identifying this agent/microfrontend */
@@ -48,13 +56,23 @@ export interface MicrofrontendComponentProps {
     /** Function to navigate to a different UI key */
     setUIKey?: (key: string) => void;
     /** Function to set component props */
-    setProps?: (props: Record<string, any>) => void;
+    setProps?: (props: Record<string, unknown>) => void;
     /** Function to go back to previous screen */
     goBack?: () => void;
     /** Whether back navigation is available */
     canGoBack?: boolean;
     /** Function to send a message to the chat */
     handleMessageSubmit?: (message: string) => void;
+    /** Whether the content is read-only (view mode) */
+    readOnly?: boolean;
+    /** Whether this is a public share page (no auth required) */
+    isPublicShare?: boolean;
+    /** Initial data for the resource (used in public share to avoid refetch) */
+    initialData?: unknown;
+    /** Session ID from URL - used for document/sheet persistence */
+    sessionId?: string;
+    /** Render function for share button - provided by host */
+    renderShareButton?: (props: ShareButtonRenderProps) => React.ReactNode;
 }
 
 // =============================================================================
