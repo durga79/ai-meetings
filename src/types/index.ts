@@ -13,6 +13,7 @@ import React from "react";
 
 export enum UIKEY {
     HOME = "home",
+    WELCOME_PAGE = "welcome_page",
     PROCESSFLOW_LIST = "processflows_list_page",
     SHOW_TABLE_PAGE = "tables_list_page",
     TABLE_COMPONENT = "table_component_page",
@@ -465,4 +466,27 @@ export interface ConfigurationPageComponentProps extends MicrofrontendComponentP
     configuredCategories?: Set<string>;
     /** Map of connector metadata by category (lowercase) - provides logo, name, description from API */
     connectorMetadataMap?: Map<string, ConnectorMetadata>;
+}
+
+
+
+export interface WelcomePageComponentProps extends MicrofrontendComponentProps {
+    props?: {
+        /** Title for the welcome page */
+        title?: string;
+        /** Subtitle/description for the welcome page */
+        subtitle?: string;
+        /** List of required configuration items to show status */
+        requiredItems?: ConfigurationItem[];
+        /** List of optional configuration items */
+        optionalItems?: ConfigurationItem[];
+    };
+    /** Function to open connector configuration sheet for a specific category */
+    openConnectorConfiguration?: (category: string) => void;
+    /** Set of configured category names (lowercase) for quick lookup */
+    configuredCategories?: Set<string>;
+    /** Map of connector metadata by category (lowercase) - provides logo, name, description from API */
+    connectorMetadataMap?: Map<string, ConnectorMetadata>;
+    /** Whether all required connectors are configured */
+    allRequiredConfigured?: boolean;
 }
