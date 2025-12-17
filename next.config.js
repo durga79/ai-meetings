@@ -63,6 +63,8 @@ const nextConfig = {
                         // Execution Component Map - components for ExecutionChainWrapper
                         // Maps ACTION_UNIQUE_ID to custom components
                         "./ExecutionComponentMap": "./src/components/ExecutionComponentMap",
+
+                        "./MicrofrontendInit": "./src/microfrontend-init",
                     },
                     
                     /**
