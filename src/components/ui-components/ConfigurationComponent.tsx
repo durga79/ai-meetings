@@ -2,13 +2,14 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { ConfigurationPageComponentProps, ConfigurationItem } from "@/types";
+import { ConfigurationPageComponentProps, ConfigurationItem, UIKEY } from "@/types";
 import { REQUIRED_CONNECTORS, OPTIONAL_CONNECTORS } from "@/config/required-connectors";
+import { ChevronRight } from "lucide-react";
 
 const getDefaultIcon = (category: string): string => {
     const iconMap: Record<string, string> = {
-        linkedin: "📊",
-        apollo: "🚀",
+        mail: "📧",
+        recall_ai: "🤖",
     };
     return iconMap[category.toLowerCase()] || "⚙️";
 };
@@ -19,6 +20,8 @@ export default function ConfigurationPageComponent({
     openConnectorConfiguration,
     configuredCategories,
     connectorMetadataMap,
+    setUIKey,
+    setProps,
 }: ConfigurationPageComponentProps) {
     const title = props?.title || "Complete Setup";
     const subtitle = props?.subtitle || "Connect required services to continue";
@@ -26,6 +29,11 @@ export default function ConfigurationPageComponent({
     // Use props if provided, otherwise use shared config
     const requiredItems = props?.requiredItems || REQUIRED_CONNECTORS;
     const optionalItems = props?.optionalItems || OPTIONAL_CONNECTORS;
+
+    // Check if all required connectors are configured
+    const allRequiredConfigured = requiredItems.length > 0 && requiredItems.every(
+        (item) => configuredCategories?.has(item.category.toLowerCase()) ?? false
+    );
 
     const getEnrichedItem = (item: ConfigurationItem): ConfigurationItem => {
         const metadata = connectorMetadataMap?.get(item.category.toLowerCase());
@@ -95,6 +103,24 @@ export default function ConfigurationPageComponent({
                                 />
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {/* Next Button - appears when all required connectors are configured */}
+                {allRequiredConfigured && (
+                    <div className="mt-6 pt-4 border-t border-stroke-default flex justify-end">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                // Set props to indicate configuration is complete
+                                setProps?.({ hasCompletedConfiguration: true });
+                                setUIKey?.(UIKEY.HOME);
+                            }}
+                            className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 bg-surface-interactive-brand text-surface-inverse text-sm font-medium shadow-sm hover:opacity-90 transition"
+                        >
+                            Next
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
                     </div>
                 )}
             </div>

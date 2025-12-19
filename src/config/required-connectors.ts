@@ -15,13 +15,13 @@ import { ConfigurationItem } from "@/types";
  */
 export const REQUIRED_CONNECTORS: ConfigurationItem[] = [
     {
-        category: "linkedin",
+        category: "mail",
         // name, description, logo will be fetched from API
     },
-    // {
-    //     category: "apollo",
-    //     // name, description, logo will be fetched from API
-    // },
+    {
+        category: "recall_ai",
+        // name, description, logo will be fetched from API
+    },
 ];
 
 /**

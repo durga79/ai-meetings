@@ -33,10 +33,9 @@
  */
 
 // Import execution components
-import LinkedinPostLiker from "./execution-components/LinkedinPostLiker";
-import LinkedinPostCommentor from "./execution-components/LinkedinPostCommentor";
-import LinkedinPostIdFromUrl from "./execution-components/LinkedinPostIdFromUrl";
-import LinkedinKeywordPostsRetriever from "./execution-components/LinkedinKeywordPostsRetriever";
+import MeetingBotCreator from "./execution-components/MeetingBotCreator";
+import BotOutputRetriever from "./execution-components/BotOutputRetriever";
+import MeetingNotesGenerator from "./execution-components/MeetingNotesGenerator";
 
 /**
  * EXECUTION_COMPONENT_MAP
@@ -55,17 +54,12 @@ import LinkedinKeywordPostsRetriever from "./execution-components/LinkedinKeywor
  * - "slack_notification_action"
  */
 export const EXECUTION_COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
-    // LinkedIn post liker (shows post details and interactions)
-    "12a4cdz": LinkedinPostLiker,
-
-    // LinkedIn post commentor
-    "12a4cdf": LinkedinPostCommentor,
-
-    // Retrieve postId from URL
-    "12a4cde": LinkedinPostIdFromUrl,
-
-    // Retrieve posts based on keywords
-    "12a4cdc": LinkedinKeywordPostsRetriever,
+    // Meeting Bot Creator - creates a bot to join meetings for recording/transcription
+    "12bavcx": MeetingBotCreator,
+    // Bot Output Retriever - retrieves recording and transcript after meeting ends
+    "12vbazx": BotOutputRetriever,
+    // Meeting Notes Generator - generates summary, MOM, action items and sends email
+    "12mngen": MeetingNotesGenerator,
 };
 
 export default EXECUTION_COMPONENT_MAP;

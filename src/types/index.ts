@@ -85,6 +85,8 @@ export interface ExecutionComponentProps {
 export interface HomeComponentProps extends MicrofrontendComponentProps {
     /** Any home-specific data */
     ui_data?: Record<string, any>;
+    /** Set of configured category names (lowercase) for quick lookup - passed from host */
+    configuredCategories?: Set<string>;
 }
 
 // =============================================================================
