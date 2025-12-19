@@ -95,7 +95,7 @@ export default function WelcomePageComponent({
                         </div>
                         <div>
                             <h1 className="text-lg sm:text-xl font-semibold text-[hsl(var(--text-inverse-default))]">
-                                Meet AI Image
+                                Meet Wexa&apos;s AI Assistant
                             </h1>
                             <p className="text-xs sm:text-sm text-[hsl(var(--text-inverse-subtlest))]">
                                 Let&apos;s get you set up
@@ -112,11 +112,10 @@ export default function WelcomePageComponent({
                 {/* Intro copy */}
                 <div className="mt-6 space-y-2">
                     <p className="text-sm sm:text-base text-[hsl(var(--text-inverse-default))]">
-                        Hi! I&apos;m your <span className="font-medium">AI Image</span>.
+                        Hi! I&apos;m <span className="font-medium">Wexa&apos;s AI Assistant</span>.
                     </p>
                     <p className="text-sm sm:text-base text-[hsl(var(--text-inverse-subtle))] leading-relaxed">
-                        I help you perform deep competitor research, extract meaningful insights, and generate
-                        reports automatically.
+                        I help you record, transcribe, and capture notes from your meetings automatically.
                     </p>
                 </div>
 
@@ -128,53 +127,48 @@ export default function WelcomePageComponent({
                     <div className="mt-3 grid grid-cols-1 gap-3">
                         <div className="flex flex-row w-full bg-surface-container-default-lighter items-center gap-3 p-4 rounded-lg hover:border-surface-interactive-brand border border-transparent transition-colors text-left">
                             <div className="flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-default flex items-center justify-center">
-                                🔍
+                                🎥
                             </div>
                             <p className="text-sm text-[hsl(var(--text-inverse-default))]">
-                                Perform deep competitor research across multiple sources
+                                Join your meetings and record video automatically
                             </p>
                         </div>
 
                         <div className="flex flex-row w-full bg-surface-container-default-lighter items-center gap-3 p-4 rounded-lg hover:border-surface-interactive-brand border border-transparent transition-colors text-left">
                             <div className="flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-default flex items-center justify-center">
-                                📊
+                                🎙️
                             </div>
                             <p className="text-sm text-[hsl(var(--text-inverse-default))]">
-                                Generate automated insight reports on schedule
+                                Generate accurate transcripts with speaker identification
                             </p>
                         </div>
 
                         <div className="flex flex-row w-full bg-surface-container-default-lighter items-center gap-3 p-4 rounded-lg hover:border-surface-interactive-brand border border-transparent transition-colors text-left">
                             <div className="flex-shrink-0 w-9 h-9 rounded-full bg-surface-container-default flex items-center justify-center">
-                                📅
+                                📝
                             </div>
                             <p className="text-sm text-[hsl(var(--text-inverse-default))]">
-                                Track only new changes with delta analysis
+                                Create meeting notes and action items automatically
                             </p>
                         </div>
                     </div>
                 </div>
 
                 {/* Footer actions */}
-                <div className="mt-8 pt-6 border-t border-stroke-default flex items-center justify-between">
-                    <button
-                        onClick={() => navigateTo(UIKEY.HOME)}
-                        className="text-sm text-text-inverse-subtle hover:text-text-inverse-default"
-                    >
-                        Skip for now
-                    </button>
+                <div className="mt-8 pt-6 border-t border-stroke-default flex flex-col items-center gap-4">
+                    <p className="text-xs text-text-inverse-subtlest text-center">
+                        Complete setup to unlock these features
+                    </p>
                     <button
                         onClick={() => navigateTo(UIKEY.CONFIGURATION_PAGE)}
                         className={cn(
-                            "inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium",
-                            "bg-surface-interactive-default text-surface-inverse",
-                            "hover:bg-surface-interactive-default-raised transition-colors",
+                            "inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-medium",
+                            "bg-gradient-to-r from-purple-600 to-purple-800 text-white",
+                            "hover:from-purple-700 hover:to-purple-900 transition-all shadow-lg",
                         )}
                     >
-                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-inverse text-surface-interactive-default text-xs">
-                            →
-                        </span>
-                        <span>Get Started</span>
+                        <span>Get started</span>
+                        <span>→</span>
                     </button>
                 </div>
             </div>
