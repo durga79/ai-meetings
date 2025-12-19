@@ -14,3 +14,4 @@ export { default as CreateTableComponent } from "./CreateTableComponent";
 export { default as ProcessFlowInputFormComponent } from "./ProcessFlowInputFormComponent";
 export { default as ExecutionDataComponent } from "./ExecutionDataComponent";
 export { default as ConfigurationPageComponent } from "./ConfigurationComponent";
+export { default as WelcomePageComponent } from "./WelcomePageComponent";

@@ -1,0 +1,86 @@
+name: Deploy to S3
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-central-1
+  S3_BUCKET: coworker-ui
+  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    
+    permissions:
+      contents: read
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Determine S3 prefix
+        id: prefix
+        run: |
+          S3_PREFIX="${{ github.event.repository.name }}"
+          echo "s3_prefix=$S3_PREFIX" >> $GITHUB_OUTPUT
+          echo "Deploying to S3 prefix: $S3_PREFIX"
+        
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+          
+      - name: Install dependencies
+        run: bun install
+        
+      - name: Build Next.js application
+        run: bun run build
+        env:
+          NEXT_PRIVATE_LOCAL_WEBPACK: true
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Upload .next/static to S3 (public assets only)
+        run: |
+          aws s3 sync .next/static/ s3://${{ env.S3_BUCKET }}/${{ steps.prefix.outputs.s3_prefix }}/.next/static/ \
+            --region ${{ env.AWS_REGION }} \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.map"
+          echo "✓ Deployed to s3://${{ env.S3_BUCKET }}/${{ steps.prefix.outputs.s3_prefix }}/"
+          
+      - name: Configure S3 bucket for public access
+        run: |
+          aws s3api put-bucket-policy \
+            --bucket ${{ env.S3_BUCKET }} \
+            --policy '{
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Sid": "PublicReadGetObject",
+                  "Effect": "Allow",
+                  "Principal": "*",
+                  "Action": "s3:GetObject",
+                  "Resource": "arn:aws:s3:::'${{ env.S3_BUCKET }}'/*"
+                }
+              ]
+            }' \
+            --region ${{ env.AWS_REGION }} || true
+            
+      - name: Invalidate CloudFront cache
+        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/${{ steps.prefix.outputs.s3_prefix }}/*"
+          echo "✓ CloudFront cache invalidated for /${{ steps.prefix.outputs.s3_prefix }}/*"
+
