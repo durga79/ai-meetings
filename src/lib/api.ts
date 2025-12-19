@@ -62,6 +62,7 @@ if (typeof window !== "undefined") {
 }
 
 /**
+ * 
  * Types for Meeting Notes API
  */
 export interface MeetingNotesRequest {
