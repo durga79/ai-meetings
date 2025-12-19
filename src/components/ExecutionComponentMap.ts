@@ -59,7 +59,7 @@ export const EXECUTION_COMPONENT_MAP: Record<string, React.ComponentType<any>> =
     // Bot Output Retriever - retrieves recording and transcript after meeting ends
     "12vbazx": BotOutputRetriever,
     // Meeting Notes Generator - generates summary, MOM, action items and sends email
-    "12mngen": MeetingNotesGenerator,
+    "12bnmac": MeetingNotesGenerator,
 };
 
 export default EXECUTION_COMPONENT_MAP;

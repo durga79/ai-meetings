@@ -46,8 +46,6 @@ import ExecutionDataComponent from "./ui-components/ExecutionDataComponent";
 import ConfigurationComponent from "./ui-components/ConfigurationComponent";
 import WelcomePageComponent from "./ui-components/WelcomePageComponent";
 import { ExecutionHistoryComponent, } from "./ui-components";
-import WelcomeScreen from "./WelcomeScreen";
-import WelcomePageComponent from "./ui-components/WelcomePageComponent";
 
 /**
  * UI_COMPONENT_MAP
@@ -61,8 +59,6 @@ import WelcomePageComponent from "./ui-components/WelcomePageComponent";
 export const UI_COMPONENT_MAP: Record<string, React.ComponentType<any>> = {
     // Home page - customize your agent's landing page
     [UIKEY.HOME]: HomeComponent,
-
-    [UIKEY. WELCOME_PAGE] : WelcomePageComponent,
     
     // Execution history - list of past workflow runs
     [UIKEY.EXECUTION_HISTORY]: ExecutionHistoryComponent,

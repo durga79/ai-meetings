@@ -5,21 +5,16 @@ import {
     FileText,
     ListChecks,
     ClipboardList,
-    Mail,
-    Send,
     CheckCircle2,
     Loader2,
     Calendar,
     Users,
     Clock,
-    ChevronRight,
     Sparkles,
     AlertCircle,
-    X,
     User,
 } from "lucide-react";
 import type { ExecutionComponentProps } from "../../types";
-import { sendMeetingNotesEmail } from "../../lib/api";
 
 // Types for parsed data
 interface ActionItem {
@@ -49,6 +44,54 @@ interface ParsedMeetingData {
     trackingId: string;
 }
 
+// Helper functions (defined outside component to avoid hoisting issues)
+
+// Helper: Strip HTML tags
+const stripHtml = (html: string): string => {
+    return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+};
+
+// Helper: Extract meeting details from MOM HTML
+const extractMeetingDetails = (html: string): MeetingDetails | null => {
+    try {
+        const titleMatch = html.match(/Meeting Title:<\/strong>\s*([^<]+)/);
+        const dateMatch = html.match(/Date \/ Time:<\/strong>\s*([^<]+)/);
+        const attendeesMatch = html.match(/Attendees:<\/strong>\s*([^<]+)/);
+        const agendaMatch = html.match(/Agenda:<\/strong>\s*([^<]+)/);
+
+        const title = titleMatch?.[1]?.trim() || "Meeting";
+        const dateStr = dateMatch?.[1]?.trim() || "";
+        const durationMatch = dateStr.match(/\(Duration:\s*(\d+\s*minutes)\)/);
+
+        return {
+            title,
+            date: dateStr.replace(/\(Duration:.*\)/, "").trim(),
+            duration: durationMatch?.[1] || "",
+            attendees: attendeesMatch?.[1]?.split(",").map(a => a.trim()) || [],
+            agenda: agendaMatch?.[1]?.trim() || "",
+        };
+    } catch {
+        return null;
+    }
+};
+
+// Helper: Parse action items from HTML
+const parseActionItems = (html: string): ActionItem[] => {
+    const items: ActionItem[] = [];
+    const regex = /<strong>Task:<\/strong>\s*([^<]+)<br>Owner:\s*([^<]+)<br>Deadline:\s*([^<]+)/g;
+    let match;
+    
+    while ((match = regex.exec(html)) !== null) {
+        items.push({
+            task: match[1].trim(),
+            owner: match[2].trim(),
+            deadline: match[3].trim(),
+        });
+    }
+    
+    return items;
+};
+
 /**
  * MeetingNotesGenerator Component
  * 
@@ -64,9 +107,6 @@ const MeetingNotesGenerator: React.FC<ExecutionComponentProps> = ({
     isFetching,
 }) => {
     const [activeTab, setActiveTab] = useState<"summary" | "mom" | "actions">("summary");
-    const [showEmailModal, setShowEmailModal] = useState(false);
-    const [emailInput, setEmailInput] = useState("");
-    const [isSending, setIsSending] = useState(false);
 
     // Parse the execution logs to extract meeting data
     const parsedData = useMemo<ParsedMeetingData>(() => {
@@ -131,103 +171,10 @@ const MeetingNotesGenerator: React.FC<ExecutionComponentProps> = ({
         return result;
     }, [logs]);
 
-    // Helper: Strip HTML tags
-    const stripHtml = (html: string): string => {
-        return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-    };
-
-    // Helper: Extract meeting details from MOM HTML
-    const extractMeetingDetails = (html: string): MeetingDetails | null => {
-        try {
-            const titleMatch = html.match(/Meeting Title:<\/strong>\s*([^<]+)/);
-            const dateMatch = html.match(/Date \/ Time:<\/strong>\s*([^<]+)/);
-            const attendeesMatch = html.match(/Attendees:<\/strong>\s*([^<]+)/);
-            const agendaMatch = html.match(/Agenda:<\/strong>\s*([^<]+)/);
-
-            const title = titleMatch?.[1]?.trim() || "Meeting";
-            const dateStr = dateMatch?.[1]?.trim() || "";
-            const durationMatch = dateStr.match(/\(Duration:\s*(\d+\s*minutes)\)/);
-
-            return {
-                title,
-                date: dateStr.replace(/\(Duration:.*\)/, "").trim(),
-                duration: durationMatch?.[1] || "",
-                attendees: attendeesMatch?.[1]?.split(",").map(a => a.trim()) || [],
-                agenda: agendaMatch?.[1]?.trim() || "",
-            };
-        } catch {
-            return null;
-        }
-    };
-
-    // Helper: Parse action items from HTML
-    const parseActionItems = (html: string): ActionItem[] => {
-        const items: ActionItem[] = [];
-        const regex = /<strong>Task:<\/strong>\s*([^<]+)<br>Owner:\s*([^<]+)<br>Deadline:\s*([^<]+)/g;
-        let match;
-        
-        while ((match = regex.exec(html)) !== null) {
-            items.push({
-                task: match[1].trim(),
-                owner: match[2].trim(),
-                deadline: match[3].trim(),
-            });
-        }
-        
-        return items;
-    };
-
     // Check if we're still processing
     const isProcessing = isLoading || isFetching || logs?.status === "running";
     const isCompleted = logs?.status === "completed";
     const hasError = logs?.status === "failed";
-
-    // State for email sending result
-    const [emailSendSuccess, setEmailSendSuccess] = useState(false);
-    const [emailSendError, setEmailSendError] = useState<string | null>(null);
-
-    // Handle send email - calls the Coworker Service API
-    const handleSendEmail = async () => {
-        if (!emailInput.trim()) return;
-        
-        setIsSending(true);
-        setEmailSendError(null);
-
-        try {
-            // Parse email addresses (comma or semicolon separated)
-            const emailAddresses = emailInput
-                .split(/[,;]/)
-                .map(email => email.trim())
-                .filter(email => email.length > 0);
-
-            if (emailAddresses.length === 0) {
-                throw new Error("Please enter at least one valid email address");
-            }
-
-            // Call the API to send email
-            const response = await sendMeetingNotesEmail({
-                to: emailAddresses,
-                subject: `Meeting Summary - ${parsedData.meetingDetails?.title || "Meeting"} - ${parsedData.meetingDetails?.date || new Date().toLocaleDateString()}`,
-                summary: parsedData.summaryHtml,
-                mom: parsedData.momHtml,
-                action_items: parsedData.actionItemsHtml,
-                meeting_title: parsedData.meetingDetails?.title,
-                meeting_date: parsedData.meetingDetails?.date,
-            });
-
-            if (response.success) {
-                setEmailSendSuccess(true);
-                setShowEmailModal(false);
-                setEmailInput("");
-            } else {
-                throw new Error(response.error || "Failed to send email");
-            }
-        } catch (error) {
-            setEmailSendError(error instanceof Error ? error.message : "Failed to send email");
-        } finally {
-            setIsSending(false);
-        }
-    };
 
     // Loading State
     if (isProcessing && !parsedData.summaryHtml) {
@@ -498,11 +445,11 @@ const MeetingNotesGenerator: React.FC<ExecutionComponentProps> = ({
                         )}
                     </div>
 
-                    {/* Footer with Actions */}
+                    {/* Footer */}
                     <div className="px-6 py-4 border-t border-[hsl(var(--stroke-soft))] bg-[hsl(var(--surface-container-default-lighter))]">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                {parsedData.emailSent ? (
+                                {parsedData.emailSent || parsedData.emailId ? (
                                     <div className="flex items-center gap-2 text-[hsl(var(--accent-lime-600))]">
                                         <CheckCircle2 className="w-4 h-4" />
                                         <span className="text-sm font-medium">Sent to {parsedData.emailId}</span>
@@ -513,89 +460,10 @@ const MeetingNotesGenerator: React.FC<ExecutionComponentProps> = ({
                                     </p>
                                 )}
                             </div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowEmailModal(true)}
-                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[hsl(var(--brand-purple-600))] to-[hsl(var(--brand-purple-800))] text-white text-sm font-medium hover:from-[hsl(var(--brand-purple-800))] hover:to-[hsl(var(--brand-purple-950))] transition-all shadow-md hover:shadow-lg"
-                                >
-                                    <Mail className="w-4 h-4" />
-                                    Send Email
-                                    <ChevronRight className="w-4 h-4" />
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Email Modal */}
-                {showEmailModal && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-[hsl(var(--surface-container-default))] rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-                            <div className="px-6 py-4 border-b border-[hsl(var(--stroke-soft))] flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-xl bg-[hsl(var(--brand-purple-100))] flex items-center justify-center">
-                                        <Mail className="w-5 h-5 text-[hsl(var(--brand-purple-600))]" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-[hsl(var(--text-inverse-default))]">Send Meeting Notes</h3>
-                                        <p className="text-xs text-[hsl(var(--text-inverse-subtle))]">Share with your team</p>
-                                    </div>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowEmailModal(false)}
-                                    className="h-8 w-8 rounded-lg hover:bg-[hsl(var(--surface-container-active))] flex items-center justify-center transition-colors"
-                                >
-                                    <X className="w-4 h-4 text-[hsl(var(--text-inverse-subtle))]" />
-                                </button>
-                            </div>
-                            <div className="p-6">
-                                <label className="block text-sm font-medium text-[hsl(var(--text-inverse-default))] mb-2">
-                                    Email Address
-                                </label>
-                                <input
-                                    type="email"
-                                    value={emailInput}
-                                    onChange={(e) => setEmailInput(e.target.value)}
-                                    placeholder="colleague@company.com"
-                                    className="w-full px-4 py-3 rounded-xl border border-[hsl(var(--stroke-soft))] bg-[hsl(var(--surface-container-default-lighter))] text-[hsl(var(--text-inverse-default))] placeholder:text-[hsl(var(--text-inverse-subtlest))] focus:outline-none focus:border-[hsl(var(--brand-purple-600))] focus:ring-2 focus:ring-[hsl(var(--brand-purple-300))]/20"
-                                />
-                                <p className="text-xs text-[hsl(var(--text-inverse-subtlest))] mt-2">
-                                    This will send the Summary, MOM, and Action Items
-                                </p>
-
-                                <div className="mt-6 flex gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowEmailModal(false)}
-                                        className="flex-1 px-4 py-2.5 rounded-xl border border-[hsl(var(--stroke-soft))] text-[hsl(var(--text-inverse-default))] text-sm font-medium hover:bg-[hsl(var(--surface-container-active))] transition-colors"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={handleSendEmail}
-                                        disabled={!emailInput.trim() || isSending}
-                                        className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[hsl(var(--brand-purple-600))] to-[hsl(var(--brand-purple-800))] text-white text-sm font-medium hover:from-[hsl(var(--brand-purple-800))] hover:to-[hsl(var(--brand-purple-950))] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isSending ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                                Sending...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Send className="w-4 h-4" />
-                                                Send
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
 
             {/* CSS for HTML content styling */}

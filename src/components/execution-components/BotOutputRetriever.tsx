@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { ExecutionComponentProps } from "@/types";
 import {
     Video,
     FileText,
-    Clock,
     CheckCircle2,
     AlertCircle,
     Play,
@@ -19,43 +18,8 @@ import {
     Calendar,
     Timer,
     Users,
-    Sparkles,
     Mail,
-    ChevronRight,
 } from "lucide-react";
-import { generateMeetingNotes, sendMeetingNotesEmail, type MeetingNotesResponse } from "../../lib/api";
-
-// Simple markdown to HTML converter
-const markdownToHtml = (markdown: string): string => {
-    if (!markdown) return "";
-    
-    let html = markdown
-        // Escape HTML first
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        // Headers
-        .replace(/^### (.+)$/gm, '<h3 class="text-base font-semibold mt-4 mb-2">$1</h3>')
-        .replace(/^## (.+)$/gm, '<h2 class="text-lg font-semibold mt-4 mb-2">$1</h2>')
-        .replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold mt-4 mb-2">$1</h1>')
-        // Bold and italic
-        .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        // Lists
-        .replace(/^- (.+)$/gm, '<li class="ml-4">$1</li>')
-        .replace(/^\d+\. (.+)$/gm, '<li class="ml-4">$1</li>')
-        // Line breaks
-        .replace(/\n\n/g, '</p><p class="mt-2">')
-        .replace(/\n/g, '<br/>');
-    
-    // Wrap in paragraph if not already
-    if (!html.startsWith('<')) {
-        html = `<p class="mt-2">${html}</p>`;
-    }
-    
-    return html;
-};
 
 // Recall.ai transcript format types
 interface RecallTimestamp {
@@ -112,17 +76,12 @@ const BotOutputRetriever = ({
     handleMessageSubmit,
     setUIKey,
 }: ExecutionComponentProps) => {
-    const [activeTab, setActiveTab] = useState<"recording" | "transcript" | "notes">("recording");
+    const [activeTab, setActiveTab] = useState<"recording" | "transcript">("recording");
     const [isPlaying, setIsPlaying] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const videoRef = useRef<HTMLVideoElement>(null);
-
-    // Meeting Notes State
-    const [isGeneratingNotes, setIsGeneratingNotes] = useState(false);
-    const [meetingNotes, setMeetingNotes] = useState<MeetingNotesResponse["data"] | null>(null);
-    const [notesError, setNotesError] = useState<string | null>(null);
 
     // Email Modal State
     const [showEmailModal, setShowEmailModal] = useState(false);
@@ -130,6 +89,11 @@ const BotOutputRetriever = ({
     const [isSendingEmail, setIsSendingEmail] = useState(false);
     const [emailSent, setEmailSent] = useState(false);
     const [emailError, setEmailError] = useState<string | null>(null);
+
+    // Transcript text for sending to process flow
+    const [transcriptText, setTranscriptText] = useState<string>("");
+    const [participants, setParticipants] = useState<string[]>([]);
+    const [isTranscriptLoading, setIsTranscriptLoading] = useState(false);
 
     const isBusy = isLoading || isFetching;
 
@@ -247,46 +211,102 @@ const BotOutputRetriever = ({
         }
     };
 
-    // Generate Meeting Notes from Transcript
-    const handleGenerateNotes = async (transcriptText: string, participants?: string[]) => {
-        setIsGeneratingNotes(true);
-        setNotesError(null);
-
-        try {
-            const response = await generateMeetingNotes({
-                // Transcript text (speaker: message format)
-                transcript: transcriptText,
-                // Recording URL from Recall.ai
-                recording_url: videoUrl || undefined,
-                // Transcript JSON URL from Recall.ai
-                transcript_url: transcriptUrl || undefined,
-                // Bot ID
-                bot_id: botId,
-                // Meeting metadata
-                meeting_title: `Meeting on ${platform}`,
-                meeting_date: recordingStarted?.toLocaleDateString() || new Date().toLocaleDateString(),
-                meeting_duration: formatDuration(recordingStarted, recordingEnded) || undefined,
-                platform: platform,
-                // Participants list
-                participants: participants,
-            });
-
-            if (response.success && response.data) {
-                setMeetingNotes(response.data);
-                setActiveTab("notes");
-            } else {
-                throw new Error(response.error || "Failed to generate meeting notes");
-            }
-        } catch (error) {
-            setNotesError(error instanceof Error ? error.message : "Failed to generate notes");
-        } finally {
-            setIsGeneratingNotes(false);
+    // Store transcript when loaded from TranscriptViewer
+    // Using useCallback to prevent infinite re-render loops
+    const handleTranscriptLoaded = useCallback((text: string, participantsList?: string[]) => {
+        setTranscriptText(text);
+        if (participantsList) {
+            setParticipants(participantsList);
         }
-    };
+    }, []);
 
-    // Send Meeting Notes via Email
+    // Fetch transcript on mount when transcript URL is available
+    // This ensures transcript is available for email even if user hasn't viewed the Transcript tab
+    React.useEffect(() => {
+        const fetchTranscriptForEmail = async () => {
+            // Only fetch if we have a URL and haven't already loaded the transcript
+            if (!transcriptUrl) {
+                console.log("No transcript URL available");
+                return;
+            }
+            
+            // Skip if already loaded
+            if (transcriptText && transcriptText.length > 0) {
+                console.log("Transcript already loaded, skipping fetch");
+                return;
+            }
+            
+            console.log("Fetching transcript from:", transcriptUrl.substring(0, 100) + "...");
+            setIsTranscriptLoading(true);
+            
+            try {
+                const response = await fetch(transcriptUrl);
+                if (!response.ok) {
+                    console.error("Transcript fetch failed:", response.status, response.statusText);
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log("Transcript data received, segments:", Array.isArray(data) ? data.length : "not an array");
+                
+                const entries: string[] = [];
+                const speakerNames: string[] = [];
+                const speakersSet = new Set<string>();
+
+                if (Array.isArray(data)) {
+                    data.forEach((segment: any) => {
+                        const participant = segment.participant;
+                        if (!participant) return;
+
+                        const speakerName = participant.name || `Speaker ${participant.id || 0}`;
+                        
+                        if (!speakersSet.has(speakerName)) {
+                            speakersSet.add(speakerName);
+                            speakerNames.push(speakerName);
+                        }
+
+                        const words = segment.words;
+                        if (words && Array.isArray(words) && words.length > 0) {
+                            const text = words.map((w: any) => w.text).join(" ");
+                            entries.push(`${speakerName}: ${text.trim()}`);
+                        }
+                    });
+                }
+
+                const fullTranscript = entries.join("\n\n");
+                console.log("Parsed transcript length:", fullTranscript.length, "Participants:", speakerNames);
+                
+                if (fullTranscript) {
+                    setTranscriptText(fullTranscript);
+                }
+                if (speakerNames.length > 0) {
+                    setParticipants(speakerNames);
+                }
+            } catch (err) {
+                console.error("Failed to fetch transcript for email:", err);
+        } finally {
+                setIsTranscriptLoading(false);
+            }
+        };
+
+        fetchTranscriptForEmail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [transcriptUrl]); // Only depend on transcriptUrl, not transcriptText
+
+    // Send email - triggers process flow via handleMessageSubmit with email_id, meeting_metadata, and transcript
     const handleSendEmail = async () => {
-        if (!emailInput.trim() || !meetingNotes) return;
+        if (!emailInput.trim()) return;
+
+        // Check if transcript is still loading
+        if (isTranscriptLoading) {
+            setEmailError("Please wait, transcript is still loading...");
+            return;
+        }
+
+        // Warn if no transcript available
+        if (!transcriptText) {
+            console.warn("No transcript text available when sending email");
+        }
 
         setIsSendingEmail(true);
         setEmailError(null);
@@ -301,22 +321,50 @@ const BotOutputRetriever = ({
                 throw new Error("Please enter at least one valid email address");
             }
 
-            const response = await sendMeetingNotesEmail({
-                to: emailAddresses,
-                subject: `Meeting Summary - ${meetingNotes.meeting_details?.title || platform} - ${meetingNotes.meeting_details?.date || recordingStarted?.toLocaleDateString()}`,
-                summary: meetingNotes.summary,
-                mom: meetingNotes.mom,
-                action_items: meetingNotes.action_items,
-                meeting_title: meetingNotes.meeting_details?.title,
-                meeting_date: meetingNotes.meeting_details?.date,
-            });
+            const emailId = emailAddresses.join(", ");
+            
+            // Build meeting metadata - simple format matching process flow input
+            const meetingTitle = `Meeting on ${platform}`;
+            const meetingDate = recordingStarted?.toLocaleDateString() || new Date().toLocaleDateString();
+            const meetingTime = recordingStarted?.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) || "";
+            const meetingDuration = formatDuration(recordingStarted, recordingEnded) || "";
+            // Use participants from transcript parsing
+            const participantsList = participants.length > 0 ? participants.join(", ") : "N/A";
+            
+            // Meeting Meta Data - simple format: Title, Time, Participants, Recording URL (no transcript URL)
+            const meetingMetaData = `Meeting Title: ${meetingTitle}
+Date: ${meetingDate}
+Time: ${meetingTime}
+Duration: ${meetingDuration}
+Participants: ${participantsList}
+Recording URL: ${videoUrl || "Not available"}`;
 
-            if (response.success) {
+            // Build the message for handleMessageSubmit matching process flow inputs
+            // Process flow expects: Email ID, Meeting Meta Data, Transcript along with Names
+            const message = `Email ID: ${emailId}
+
+Meeting Meta Data: ${meetingMetaData}
+
+Transcript along with Names:
+${transcriptText || "No transcript available"}`;
+
+            console.log("Sending email with data:", {
+                emailId,
+                participantsList,
+                transcriptLength: transcriptText?.length || 0,
+                videoUrl: videoUrl?.substring(0, 100) || "MISSING",
+                meetingMetaData,
+            });
+            console.log("Full message being sent:", message);
+
+            // Send to chat/process flow via handleMessageSubmit
+            if (handleMessageSubmit) {
+                handleMessageSubmit(message);
                 setEmailSent(true);
                 setShowEmailModal(false);
                 setEmailInput("");
             } else {
-                throw new Error(response.error || "Failed to send email");
+                throw new Error("Chat service not available");
             }
         } catch (error) {
             setEmailError(error instanceof Error ? error.message : "Failed to send email");
@@ -591,32 +639,33 @@ const BotOutputRetriever = ({
                                     </span>
                                 </div>
                             </button>
+                            {/* Send Email Button */}
                             <button
                                 type="button"
-                                onClick={() => setActiveTab("notes")}
-                                disabled={!isTranscriptReady && !meetingNotes}
+                                onClick={() => setShowEmailModal(true)}
+                                disabled={!isTranscriptReady || emailSent}
                                 className={`flex-1 flex items-center justify-center gap-3 py-4 px-5 rounded-xl text-sm font-bold transition-all duration-200 border-2 shadow-md ${
-                                    activeTab === "notes"
-                                        ? "bg-gradient-to-r from-[hsl(var(--accent-lime-500))] to-[hsl(var(--accent-sage-600))] text-white border-transparent shadow-[hsl(var(--accent-lime-500))]/30"
-                                        : "bg-[hsl(var(--surface-container-raised))] text-[hsl(var(--text-inverse-default))] border-[hsl(var(--stroke-soft))] hover:border-[hsl(var(--accent-lime-500))] hover:bg-[hsl(var(--surface-container-active))]"
-                                } ${(!isTranscriptReady && !meetingNotes) ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                                    emailSent
+                                        ? "bg-gradient-to-r from-[hsl(var(--accent-lime-500))] to-[hsl(var(--accent-sage-600))] text-white border-transparent"
+                                        : "bg-[hsl(var(--surface-container-raised))] text-[hsl(var(--text-inverse-default))] border-[hsl(var(--stroke-soft))] hover:border-[hsl(var(--brand-purple-600))] hover:bg-[hsl(var(--surface-container-purple))]"
+                                } ${!isTranscriptReady ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
                             >
                                 <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                                    activeTab === "notes" 
+                                    emailSent 
                                         ? "bg-white/20" 
-                                        : "bg-[hsl(var(--accent-sage-950))]"
+                                        : "bg-[hsl(var(--brand-purple-950))]"
                                 }`}>
-                                    <Sparkles className="w-5 h-5" />
+                                    {emailSent ? <CheckCircle2 className="w-5 h-5" /> : <Mail className="w-5 h-5" />}
                                 </div>
                                 <div className="text-left">
                                     <div className="flex items-center gap-2">
-                                        <span>AI Notes</span>
-                                        {meetingNotes && (
-                                            <span className="h-2 w-2 rounded-full bg-[hsl(var(--accent-lime-400))] animate-pulse" />
+                                        <span>{emailSent ? "Email Sent" : "Send Email"}</span>
+                                        {emailSent && (
+                                            <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
                                         )}
                                     </div>
-                                    <span className={`text-xs font-normal ${activeTab === "notes" ? "text-white/70" : "text-[hsl(var(--text-inverse-subtlest))]"}`}>
-                                        {meetingNotes ? "View summary" : isGeneratingNotes ? "Generating..." : "Generate"}
+                                    <span className={`text-xs font-normal ${emailSent ? "text-white/70" : "text-[hsl(var(--text-inverse-subtlest))]"}`}>
+                                        {emailSent ? "Processing notes..." : "Generate & send notes"}
                                     </span>
                                 </div>
                             </button>
@@ -708,153 +757,10 @@ const BotOutputRetriever = ({
                         {activeTab === "transcript" && isTranscriptReady && (
                             <TranscriptViewer 
                                 transcriptUrl={transcriptUrl} 
-                                onGenerateNotes={handleGenerateNotes}
-                                isGeneratingNotes={isGeneratingNotes}
+                                onTranscriptLoaded={handleTranscriptLoaded}
                             />
                         )}
 
-                        {/* Notes Tab Content */}
-                        {activeTab === "notes" && (
-                            <div className="space-y-4">
-                                {/* Not generated yet - show generate button */}
-                                {!meetingNotes && !isGeneratingNotes && (
-                                    <div className="text-center py-12 px-6">
-                                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[hsl(var(--accent-lime-500))] to-[hsl(var(--accent-sage-600))] flex items-center justify-center mx-auto mb-4 shadow-lg">
-                                            <Sparkles className="w-8 h-8 text-white" />
-                                        </div>
-                                        <h3 className="text-lg font-semibold text-[hsl(var(--text-inverse-default))] mb-2">
-                                            Generate AI Meeting Notes
-                                        </h3>
-                                        <p className="text-sm text-[hsl(var(--text-inverse-subtle))] mb-6 max-w-sm mx-auto">
-                                            Our AI will analyze the transcript and create a summary, minutes of meeting, and action items.
-                                        </p>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                // We need to get the transcript text - will be passed from TranscriptViewer
-                                                setActiveTab("transcript");
-                                            }}
-                                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[hsl(var(--accent-lime-500))] to-[hsl(var(--accent-sage-600))] text-white font-semibold hover:from-[hsl(var(--accent-lime-600))] hover:to-[hsl(var(--accent-sage-600))] transition-all shadow-lg hover:shadow-xl"
-                                        >
-                                            <Sparkles className="w-5 h-5" />
-                                            Generate from Transcript
-                                            <ChevronRight className="w-5 h-5" />
-                                        </button>
-                                    </div>
-                                )}
-
-                                {/* Generating loading state */}
-                                {isGeneratingNotes && (
-                                    <div className="text-center py-12 px-6">
-                                        <div className="relative mx-auto mb-6 w-16 h-16">
-                                            <div className="absolute inset-0 rounded-full bg-[hsl(var(--accent-lime-400))]/20 animate-ping" />
-                                            <div className="relative h-16 w-16 rounded-full bg-gradient-to-br from-[hsl(var(--accent-lime-500))] to-[hsl(var(--accent-sage-600))] flex items-center justify-center">
-                                                <Loader2 className="w-8 h-8 text-white animate-spin" />
-                                            </div>
-                                        </div>
-                                        <h3 className="text-lg font-semibold text-[hsl(var(--text-inverse-default))] mb-2">
-                                            Generating Meeting Notes
-                                        </h3>
-                                        <p className="text-sm text-[hsl(var(--text-inverse-subtle))]">
-                                            AI is analyzing the transcript...
-                                        </p>
-                                    </div>
-                                )}
-
-                                {/* Error state */}
-                                {notesError && (
-                                    <div className="text-center py-8 px-6">
-                                        <div className="h-14 w-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                                            <AlertCircle className="w-7 h-7 text-red-600" />
-                                        </div>
-                                        <h3 className="text-lg font-semibold text-[hsl(var(--text-inverse-default))] mb-2">
-                                            Failed to Generate Notes
-                                        </h3>
-                                        <p className="text-sm text-[hsl(var(--semantic-error-surface))] mb-4">
-                                            {notesError}
-                                        </p>
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setNotesError(null);
-                                                setActiveTab("transcript");
-                                            }}
-                                            className="text-sm text-[hsl(var(--brand-purple-600))] hover:underline"
-                                        >
-                                            Try again from transcript
-                                        </button>
-                                    </div>
-                                )}
-
-                                {/* Meeting Notes Content */}
-                                {meetingNotes && !isGeneratingNotes && (
-                                    <div className="space-y-4">
-                                        {/* Quick Stats */}
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div>
-                                                <h3 className="text-base font-semibold text-[hsl(var(--text-inverse-default))]">
-                                                    {meetingNotes.meeting_details?.title || "Meeting Notes"}
-                                                </h3>
-                                                <p className="text-xs text-[hsl(var(--text-inverse-subtle))]">
-                                                    {meetingNotes.meeting_details?.date} • {meetingNotes.meeting_details?.duration}
-                                                </p>
-                                            </div>
-                                            {emailSent ? (
-                                                <div className="flex items-center gap-1.5 text-[hsl(var(--accent-lime-600))]">
-                                                    <CheckCircle2 className="w-4 h-4" />
-                                                    <span className="text-xs font-medium">Email Sent</span>
-                                                </div>
-                                            ) : (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowEmailModal(true)}
-                                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[hsl(var(--brand-purple-600))] to-[hsl(var(--brand-purple-800))] text-white text-sm font-medium hover:from-[hsl(var(--brand-purple-800))] hover:to-[hsl(var(--brand-purple-950))] transition-all shadow-md"
-                                                >
-                                                    <Mail className="w-4 h-4" />
-                                                    Send Email
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        {/* Summary Section */}
-                                        <div className="bg-[hsl(var(--surface-container-default-lighter))] rounded-xl p-4 border border-[hsl(var(--stroke-soft))]">
-                                            <h4 className="text-sm font-semibold text-[hsl(var(--brand-purple-600))] mb-2 flex items-center gap-2">
-                                                <FileText className="w-4 h-4" />
-                                                Summary
-                                            </h4>
-                                            <div 
-                                                className="text-sm text-[hsl(var(--text-inverse-default))] prose prose-sm max-w-none meeting-notes-content [&_strong]:text-[hsl(var(--brand-purple-300))] [&_em]:text-[hsl(var(--text-inverse-subtle))] [&_h3]:text-[hsl(var(--text-inverse-default))] [&_li]:list-disc"
-                                                dangerouslySetInnerHTML={{ __html: markdownToHtml(meetingNotes.summary || "") }}
-                                            />
-                                        </div>
-
-                                        {/* MOM Section */}
-                                        <div className="bg-[hsl(var(--surface-container-default-lighter))] rounded-xl p-4 border border-[hsl(var(--stroke-soft))]">
-                                            <h4 className="text-sm font-semibold text-[hsl(var(--brand-purple-600))] mb-2 flex items-center gap-2">
-                                                <Clock className="w-4 h-4" />
-                                                Minutes of Meeting
-                                            </h4>
-                                            <div 
-                                                className="text-sm text-[hsl(var(--text-inverse-default))] prose prose-sm max-w-none meeting-notes-content [&_strong]:text-[hsl(var(--brand-purple-300))] [&_em]:text-[hsl(var(--text-inverse-subtle))] [&_h3]:text-[hsl(var(--text-inverse-default))] [&_li]:list-disc"
-                                                dangerouslySetInnerHTML={{ __html: markdownToHtml(meetingNotes.mom || "") }}
-                                            />
-                                        </div>
-
-                                        {/* Action Items Section */}
-                                        <div className="bg-[hsl(var(--surface-container-default-lighter))] rounded-xl p-4 border border-[hsl(var(--stroke-soft))]">
-                                            <h4 className="text-sm font-semibold text-[hsl(var(--brand-purple-600))] mb-2 flex items-center gap-2">
-                                                <CheckCircle2 className="w-4 h-4" />
-                                                Action Items
-                                            </h4>
-                                            <div 
-                                                className="text-sm text-[hsl(var(--text-inverse-default))] prose prose-sm max-w-none meeting-notes-content [&_strong]:text-[hsl(var(--brand-purple-300))] [&_em]:text-[hsl(var(--text-inverse-subtle))] [&_h3]:text-[hsl(var(--text-inverse-default))] [&_li]:list-disc"
-                                                dangerouslySetInnerHTML={{ __html: markdownToHtml(meetingNotes.action_items || "") }}
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
 
                     {/* Footer */}
@@ -870,16 +776,16 @@ const BotOutputRetriever = ({
 
             {/* Email Modal */}
             {showEmailModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[hsl(var(--surface-container-default))] rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
-                        <div className="px-6 py-4 border-b border-[hsl(var(--stroke-soft))] flex items-center justify-between">
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-surface-container-default rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-stroke-default">
+                        <div className="px-6 py-4 border-b border-stroke-soft bg-surface-container-default flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-xl bg-[hsl(var(--brand-purple-100))] flex items-center justify-center">
-                                    <Mail className="w-5 h-5 text-[hsl(var(--brand-purple-600))]" />
+                                <div className="h-10 w-10 rounded-xl bg-purple-900/50 flex items-center justify-center">
+                                    <Mail className="w-5 h-5 text-purple-400" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-[hsl(var(--text-inverse-default))]">Send Meeting Notes</h3>
-                                    <p className="text-xs text-[hsl(var(--text-inverse-subtle))]">Share with your team</p>
+                                    <h3 className="font-semibold text-text-inverse-default">Generate & Send Meeting Notes</h3>
+                                    <p className="text-xs text-text-inverse-subtle">AI will create summary, MOM & action items</p>
                                 </div>
                             </div>
                             <button
@@ -888,13 +794,13 @@ const BotOutputRetriever = ({
                                     setShowEmailModal(false);
                                     setEmailError(null);
                                 }}
-                                className="h-8 w-8 rounded-lg hover:bg-[hsl(var(--surface-container-active))] flex items-center justify-center transition-colors text-[hsl(var(--text-inverse-subtle))]"
+                                className="h-8 w-8 rounded-lg hover:bg-surface-container-active flex items-center justify-center transition-colors text-text-inverse-subtle"
                             >
                                 ✕
                             </button>
                         </div>
-                        <div className="p-6">
-                            <label className="block text-sm font-medium text-[hsl(var(--text-inverse-default))] mb-2">
+                        <div className="p-6 bg-surface-container-default">
+                            <label className="block text-sm font-medium text-text-inverse-default mb-2">
                                 Email Address
                             </label>
                             <input
@@ -902,14 +808,14 @@ const BotOutputRetriever = ({
                                 value={emailInput}
                                 onChange={(e) => setEmailInput(e.target.value)}
                                 placeholder="colleague@company.com"
-                                className="w-full px-4 py-3 rounded-xl border border-[hsl(var(--stroke-soft))] bg-[hsl(var(--surface-container-default-lighter))] text-[hsl(var(--text-inverse-default))] placeholder:text-[hsl(var(--text-inverse-subtlest))] focus:outline-none focus:border-[hsl(var(--brand-purple-600))] focus:ring-2 focus:ring-[hsl(var(--brand-purple-300))]/20"
+                                className="w-full px-4 py-3 rounded-xl border border-stroke-soft bg-surface-container-raised text-text-inverse-default placeholder:text-text-inverse-subtlest focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
                             />
-                            <p className="text-xs text-[hsl(var(--text-inverse-subtlest))] mt-2">
-                                Separate multiple emails with commas
+                            <p className="text-xs text-text-inverse-subtlest mt-2">
+                                AI will generate summary, MOM & action items from the transcript and send to this email
                             </p>
 
                             {emailError && (
-                                <div className="mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                                <div className="mt-3 p-3 rounded-lg bg-red-900/30 border border-red-500/30">
                                     <p className="text-sm text-red-400">{emailError}</p>
                                 </div>
                             )}
@@ -921,7 +827,7 @@ const BotOutputRetriever = ({
                                         setShowEmailModal(false);
                                         setEmailError(null);
                                     }}
-                                    className="flex-1 px-4 py-2.5 rounded-xl border border-[hsl(var(--stroke-soft))] text-[hsl(var(--text-inverse-default))] text-sm font-medium hover:bg-[hsl(var(--surface-container-active))] transition-colors"
+                                    className="flex-1 px-4 py-2.5 rounded-xl border border-stroke-soft text-text-inverse-default text-sm font-medium hover:bg-surface-container-active transition-colors bg-surface-container-raised"
                                 >
                                     Cancel
                                 </button>
@@ -929,7 +835,7 @@ const BotOutputRetriever = ({
                                     type="button"
                                     onClick={handleSendEmail}
                                     disabled={!emailInput.trim() || isSendingEmail}
-                                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[hsl(var(--brand-purple-600))] to-[hsl(var(--brand-purple-800))] text-white text-sm font-medium hover:from-[hsl(var(--brand-purple-800))] hover:to-[hsl(var(--brand-purple-950))] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-purple-800 text-white text-sm font-medium hover:from-purple-700 hover:to-purple-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                                 >
                                     {isSendingEmail ? (
                                         <>
@@ -960,11 +866,10 @@ interface SpeakerData {
 
 interface TranscriptViewerProps {
     transcriptUrl: string;
-    onGenerateNotes?: (transcriptText: string, participants?: string[]) => void;
-    isGeneratingNotes?: boolean;
+    onTranscriptLoaded?: (transcriptText: string, participants?: string[]) => void;
 }
 
-const TranscriptViewer = ({ transcriptUrl, onGenerateNotes, isGeneratingNotes }: TranscriptViewerProps) => {
+const TranscriptViewer = ({ transcriptUrl, onTranscriptLoaded }: TranscriptViewerProps) => {
     const [transcriptEntries, setTranscriptEntries] = useState<ParsedTranscriptEntry[]>([]);
     const [isLoadingTranscript, setIsLoadingTranscript] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -1054,6 +959,10 @@ const TranscriptViewer = ({ transcriptUrl, onGenerateNotes, isGeneratingNotes }:
                     `${entry.speakerName}: ${entry.text}`
                 ).join("\n\n");
                 setRawTranscriptText(textForLLM);
+                
+                // Notify parent component with transcript data
+                const participantNames = sortedSpeakers.map(s => s.name);
+                onTranscriptLoaded?.(textForLLM, participantNames);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "Failed to load transcript");
             } finally {
@@ -1062,7 +971,8 @@ const TranscriptViewer = ({ transcriptUrl, onGenerateNotes, isGeneratingNotes }:
         };
 
         fetchTranscript();
-    }, [transcriptUrl]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [transcriptUrl]); // Only re-fetch when URL changes, not when callback changes
 
     const formatTimestamp = (seconds: number): string => {
         if (isNaN(seconds) || seconds < 0) return "0:00";
@@ -1247,33 +1157,11 @@ const TranscriptViewer = ({ transcriptUrl, onGenerateNotes, isGeneratingNotes }:
                 </div>
             </div>
 
-            {/* Footer with Generate Notes Button */}
+            {/* Footer */}
             <div className="px-5 py-4 border-t border-[hsl(var(--stroke-soft))] bg-[hsl(var(--surface-container-default-lighter))]">
-                <div className="flex items-center justify-between">
-                    <p className="text-[11px] text-[hsl(var(--text-inverse-subtlest))]">
+                <p className="text-[11px] text-[hsl(var(--text-inverse-subtlest))] text-center">
                         Powered by <span className="font-semibold text-[hsl(var(--brand-purple-300))]">Wexa AI</span> & <span className="font-semibold text-[hsl(var(--text-inverse-subtle))]">Recall.ai</span>
                     </p>
-                    {onGenerateNotes && rawTranscriptText && (
-                        <button
-                            type="button"
-                            onClick={() => onGenerateNotes(rawTranscriptText, speakers.map(s => s.name))}
-                            disabled={isGeneratingNotes}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[hsl(var(--accent-lime-500))] to-[hsl(var(--accent-sage-600))] text-white text-sm font-semibold hover:from-[hsl(var(--accent-lime-600))] hover:to-[hsl(var(--accent-sage-600))] transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isGeneratingNotes ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    Generating...
-                                </>
-                            ) : (
-                                <>
-                                    <Sparkles className="w-4 h-4" />
-                                    Generate AI Notes
-                                </>
-                            )}
-                        </button>
-                    )}
-                </div>
             </div>
         </div>
     );
